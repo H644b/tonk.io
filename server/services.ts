@@ -255,7 +255,7 @@ export function setupServices(app: Express, options: { store?: ServiceStore } = 
     if (error.type === 'entity.too.large') return res.status(413).json({ error: { code: 'payload_too_large', message: 'JSON body exceeds 3 MB.' } });
     if (error.type === 'entity.parse.failed') return res.status(400).json({ error: { code: 'invalid_json', message: 'The request body is not valid JSON.' } });
     console.error('Independent account service error:', error);
-    res.status(500).json({ error: { code: 'internal_error', message: 'The local service could not complete this request.' } });
+    res.status(500).json({ error: { code: 'internal_error', message: 'Could not complete the request. Please try again.' } });
   });
   app.use('/api', api);
   return { store };

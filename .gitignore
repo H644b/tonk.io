@@ -14,3 +14,5 @@ mods/installed/
 mods/host-packs/
 mods/data/
 mods/enabled.json
+
+.deployment/
