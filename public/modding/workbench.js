@@ -1,0 +1,609 @@
+"use strict";
+(() => {
+  // client/modding/workbench.ts
+  var nativeBases = {
+    b: "Classic",
+    ar: "Arrows",
+    ard: "Death Arrows",
+    bs: "Simple",
+    sp: "Grapple",
+    f: "Football",
+    v: "VTOL"
+  };
+  function initialize(frame, mount) {
+    const nativeWindow = () => frame.contentWindow;
+    const native = () => nativeWindow()?.manifold;
+    const runtime = () => nativeWindow()?.BonkMods;
+    const node = (tag, text = "", className = "") => {
+      const element = document.createElement(tag);
+      element.textContent = text;
+      if (className) element.className = className;
+      return element;
+    };
+    const button = (text, action) => {
+      const element = node("button", text);
+      element.type = "button";
+      element.onclick = action;
+      return element;
+    };
+    const amount = (pack) => Object.keys(pack.assets || {}).length;
+    const totalAssets = (profile) => profile.mods.reduce((sum, pack) => sum + amount(pack), 0);
+    let selectedProfile = null;
+    let packs = [];
+    let serverModes = [];
+    let busy = false;
+    let hostAction = false;
+    let refreshPromise = null;
+    let refreshAgain = false;
+    const selected = /* @__PURE__ */ new Set();
+    const ownApproved = /* @__PURE__ */ new Set();
+    const queue = [];
+    let currentConsent = null;
+    let loadingConsent = null;
+    mount.replaceChildren();
+    mount.classList.add("modpack-tools");
+    mount.append(node("h2", "Modpacks"));
+    const help = button(
+      "Modding help",
+      () => window.bonkWorkbench?.help("modding")
+    );
+    const example = node("a", "Download Orb Kit example");
+    example.href = "/help/examples/orb-kit-1.0.0.bonkmod";
+    example.download = "orb-kit-1.0.0.bonkmod";
+    const links = node("p", "", "modpack-links");
+    links.append(help, example);
+    mount.append(links);
+    const heading = node("h3", "This room");
+    const roomStatus = node("p", "Join a room to manage mods.");
+    const profileHash = node("p", "", "modpack-hash");
+    const active = node("div", "", "modpack-active");
+    const registrations = node("p", "", "modpack-registrations");
+    const output = node("output", "", "modpack-status");
+    output.setAttribute("aria-live", "polite");
+    const progress = node("progress");
+    progress.hidden = true;
+    progress.setAttribute("aria-label", "Loading room modpack");
+    mount.append(
+      heading,
+      roomStatus,
+      profileHash,
+      active,
+      registrations,
+      progress,
+      output
+    );
+    const hostTools = node("section", "", "modpack-host-tools");
+    const hostHint = node("p");
+    const installed = node("fieldset");
+    installed.append(node("legend", "Available packs"));
+    const choices = node("div");
+    installed.append(choices);
+    const apply = button(
+      "Apply packs",
+      () => hostChange(async () => {
+        const result = await emit("mods:profile", [...selected]);
+        return result.profile;
+      })
+    );
+    const clear = button(
+      "Remove packs",
+      () => hostChange(async () => {
+        const result = await emit("mods:profile", []);
+        return result.profile;
+      })
+    );
+    const actions = node("div", "", "modpack-actions");
+    actions.append(apply, clear);
+    const modeLabel = node("label", "Game rules");
+    const modeSelect = node("select");
+    modeLabel.append(modeSelect);
+    const useMode = button("Use mode", () => {
+      const id = modeSelect.value;
+      const mode = availableModes().find((candidate) => candidate.id === id);
+      if (id && !mode)
+        return report(
+          "This mode is no longer registered by the active packs. Refresh the Workbench."
+        );
+      return hostChange(
+        async () => {
+          const result = await emit(
+            "mods:mode",
+            mode ? { id: mode.id, base: mode.base } : ""
+          );
+          return result.profile;
+        },
+        mode ? `${mode.name} selected for this room.` : "Default rules selected."
+      );
+    });
+    const fileLabel = node("label", "Modpack file");
+    const file = node("input");
+    file.type = "file";
+    file.accept = ".bonkmod,.zip,application/zip";
+    fileLabel.append(file);
+    const publish = button(
+      "Upload & apply",
+      () => hostChange(async () => {
+        const archive = file.files?.[0];
+        if (!archive) throw Error("Choose a .bonkmod or .zip archive first.");
+        if (!/\.(bonkmod|zip)$/i.test(archive.name))
+          throw Error(
+            "Choose a .bonkmod or .zip pack containing bonk.mod.json, code, and assets."
+          );
+        if (archive.size > 64 * 1024 * 1024)
+          throw Error("Pack archives must be 64 MB or smaller.");
+        const room = native()?.room;
+        if (!room) throw Error("Join a room first.");
+        const credential = await emit("mods:host-token");
+        if (!credential.token)
+          throw Error("The server did not issue a room-host upload token.");
+        const response = await fetch(
+          `/api/rooms/${encodeURIComponent(room)}/modpack`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/octet-stream",
+              "X-Bonk-Host": credential.token
+            },
+            body: archive
+          }
+        );
+        const result = await response.json();
+        if (!response.ok || result.error)
+          throw Error(
+            result.error?.message || result.error || "Pack upload failed."
+          );
+        file.value = "";
+        return result.profile;
+      })
+    );
+    hostTools.append(
+      hostHint,
+      installed,
+      actions,
+      node("h3", "Custom mode"),
+      modeLabel,
+      useMode,
+      node("h3", "Upload pack"),
+      fileLabel,
+      publish
+    );
+    mount.append(hostTools);
+    const legacy = node("details", "", "modpack-legacy");
+    legacy.append(node("summary", "Appearance & isolated scripts"));
+    let sibling = mount.nextSibling;
+    while (sibling) {
+      const next = sibling.nextSibling;
+      legacy.append(sibling);
+      sibling = next;
+    }
+    const oldHeading = legacy.querySelector("h2");
+    if (oldHeading) oldHeading.textContent = "Appearance";
+    const apiHeading = legacy.querySelector("h3");
+    if (apiHeading) apiHeading.textContent = "Worker scripts";
+    mount.after(legacy);
+    const dialog = node("dialog", "", "modpack-consent");
+    dialog.setAttribute("aria-labelledby", "modpack-consent-title");
+    dialog.setAttribute("aria-describedby", "modpack-consent-description");
+    const dialogHeader = node("header");
+    const dialogTitle = node("h2", "Join a modded room?");
+    dialogTitle.id = "modpack-consent-title";
+    dialogHeader.append(dialogTitle);
+    const dialogBody = node("div", "", "modpack-consent-body");
+    const dialogDescription = node("p");
+    dialogDescription.id = "modpack-consent-description";
+    const permission = node(
+      "p",
+      "Mods can access your game and account data. Only download packs you trust."
+    );
+    const dialogPacks = node("div", "", "modpack-consent-packs");
+    const dialogHash = node("p", "", "modpack-hash");
+    const dialogProgress = node("output", "", "modpack-consent-progress");
+    dialogProgress.setAttribute("aria-live", "polite");
+    const dialogProgressBar = node("progress");
+    dialogProgressBar.hidden = true;
+    dialogProgressBar.setAttribute(
+      "aria-label",
+      "Downloading and verifying room content"
+    );
+    const decline = button("Leave Room", () => decide(false));
+    const accept = button("Download & Join", () => decide(true));
+    decline.autofocus = true;
+    const dialogActions = node("div", "", "modpack-consent-actions");
+    dialogActions.append(decline, accept);
+    dialogBody.append(
+      dialogDescription,
+      permission,
+      dialogPacks,
+      dialogHash,
+      dialogProgressBar,
+      dialogProgress,
+      dialogActions
+    );
+    dialog.append(dialogHeader, dialogBody);
+    document.body.append(dialog);
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      decide(false);
+    });
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") event.stopPropagation();
+    });
+    function sendDecision(request, accepted) {
+      frame.contentWindow?.postMessage(
+        { type: "bonk-modpack-decision", id: request.id, accept: accepted },
+        location.origin
+      );
+    }
+    function pump() {
+      if (hostAction || currentConsent || loadingConsent || !queue.length) return;
+      const request = queue.shift();
+      if (ownApproved.has(request.profile.hash)) {
+        sendDecision(request, true);
+        pump();
+        return;
+      }
+      currentConsent = request;
+      dialogTitle.textContent = "Join a modded room?";
+      accept.hidden = false;
+      permission.hidden = false;
+      dialogProgress.textContent = "";
+      dialogProgressBar.hidden = true;
+      const count = request.profile.mods.filter((pack) => !!pack.client).length;
+      const assets = totalAssets(request.profile);
+      dialogDescription.textContent = `${count} code ${count === 1 ? "pack" : "packs"} \xB7 ${assets} ${assets === 1 ? "asset" : "assets"}`;
+      dialogPacks.replaceChildren();
+      for (const pack of request.profile.mods) {
+        const row = node("article");
+        row.append(
+          node("strong", `${pack.name} ${pack.version}`),
+          node(
+            "p",
+            `${pack.id} \xB7 ${amount(pack)} ${amount(pack) === 1 ? "asset" : "assets"}${pack.serverCode ? " \xB7 Server component" : ""}`,
+            "modpack-detail"
+          )
+        );
+        dialogPacks.append(row);
+      }
+      dialogHash.replaceChildren(
+        node("span", "Profile SHA-256 "),
+        node("code", request.profile.hash)
+      );
+      dialog.showModal();
+      decline.focus();
+    }
+    function decide(accepted) {
+      if (loadingConsent) {
+        if (accepted) return;
+        loadingConsent = null;
+        dialog.close();
+        runtime()?.leaveRoom();
+        for (const request2 of queue.splice(0)) sendDecision(request2, false);
+        report("Left the room while loading its pack.");
+        return;
+      }
+      if (!currentConsent) return;
+      const request = currentConsent;
+      currentConsent = null;
+      sendDecision(request, accepted);
+      if (accepted) {
+        loadingConsent = request.profile;
+        dialogTitle.textContent = "Loading room modpack";
+        dialogDescription.textContent = "Downloading and verifying mods\u2026";
+        permission.hidden = true;
+        accept.hidden = true;
+        dialogProgressBar.hidden = false;
+        dialogProgress.textContent = "Downloading mods\u2026";
+        decline.focus();
+        report("Downloading mods\u2026", true);
+      } else {
+        dialog.close();
+        for (const request2 of queue.splice(0)) sendDecision(request2, false);
+        report("Leaving room\u2026");
+      }
+    }
+    function report(message, loading = false) {
+      output.textContent = message;
+      progress.hidden = !loading;
+    }
+    function isHost() {
+      const game = native();
+      return !!game?.socket?.connected && Number.isInteger(game.localId) && game.localId === game.hostId;
+    }
+    function inLobby() {
+      const element = frame.contentDocument?.querySelector("#newbonklobby");
+      return !!element && !!element.getClientRects().length && nativeWindow().getComputedStyle(element).visibility !== "hidden";
+    }
+    function controls() {
+      const allowed = isHost() && inLobby() && !busy;
+      for (const control of [apply, clear, file, publish])
+        control.disabled = !allowed;
+      installed.disabled = !allowed;
+      const ready = !!selectedProfile && runtime()?.profile?.hash === selectedProfile.hash;
+      modeSelect.disabled = !allowed || !ready;
+      useMode.disabled = !allowed || !ready;
+      hostHint.textContent = !native()?.socket?.connected ? "" : !isHost() ? "Only the host can change mods." : !inLobby() ? "Return to the lobby to change mods." : "";
+    }
+    function renderProfile() {
+      const game = native();
+      const joined = !!game?.socket?.connected && Number.isInteger(game.localId);
+      if (!joined) {
+        roomStatus.textContent = "Join a room to manage mods.";
+        profileHash.textContent = "";
+        active.replaceChildren();
+        renderModes();
+        controls();
+        return;
+      }
+      if (!selectedProfile) {
+        roomStatus.textContent = `Loading mods\u2026`;
+        renderModes();
+        controls();
+        return;
+      }
+      const loaded = runtime()?.profile?.hash === selectedProfile.hash;
+      roomStatus.textContent = selectedProfile.mods.length ? `${selectedProfile.mods.length} ${selectedProfile.mods.length === 1 ? "pack" : "packs"} selected \xB7 ${loaded ? "Ready" : "Loading\u2026"}` : "No mods selected.";
+      profileHash.replaceChildren(
+        node("span", "Profile SHA-256 "),
+        node("code", selectedProfile.hash)
+      );
+      active.replaceChildren();
+      for (const pack of selectedProfile.mods) {
+        const row = node("article", "", "modpack-row");
+        row.append(
+          node("strong", `${pack.name} ${pack.version}`),
+          node(
+            "p",
+            `${pack.id} \xB7 ${amount(pack)} ${amount(pack) === 1 ? "asset" : "assets"}${pack.client ? " \xB7 Client code" : ""}${pack.serverCode ? " \xB7 Server code" : ""}`,
+            "modpack-detail"
+          )
+        );
+        active.append(row);
+      }
+      renderModes();
+      controls();
+    }
+    function availableModes() {
+      const owners = new Set(
+        (selectedProfile?.mods || []).map((pack) => pack.id)
+      );
+      const found = /* @__PURE__ */ new Map();
+      const add = (mode) => {
+        if (!mode || typeof mode.id !== "string" || !owners.has(mode.id.split(":")[0]) || !nativeBases[mode.base])
+          return;
+        if (!found.has(mode.id))
+          found.set(mode.id, {
+            id: mode.id,
+            name: String(mode.name || mode.id),
+            base: mode.base
+          });
+      };
+      serverModes.forEach(add);
+      for (const entry of runtime()?.registries?.get("modes")?.values() || [])
+        add({
+          id: entry.id,
+          name: entry.value?.name || entry.id,
+          base: entry.value?.base
+        });
+      return [...found.values()].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    function renderModes() {
+      const current = selectedProfile?.mode || "";
+      modeSelect.replaceChildren();
+      const base = node("option", "Default rules");
+      base.value = "";
+      modeSelect.append(base);
+      for (const mode of availableModes()) {
+        const option = node("option", `${mode.name} \xB7 ${nativeBases[mode.base]}`);
+        option.value = mode.id;
+        option.title = mode.id;
+        modeSelect.append(option);
+      }
+      if (current && ![...modeSelect.options].some((option) => option.value === current)) {
+        const pending = node("option", `${current} (waiting for declaration)`);
+        pending.value = current;
+        pending.disabled = true;
+        modeSelect.append(pending);
+      }
+      modeSelect.value = current;
+    }
+    function renderChoices() {
+      choices.replaceChildren();
+      if (!packs.length)
+        choices.append(node("p", "No installed packs.", "modpack-detail"));
+      for (const pack of packs) {
+        const label = node("label", "", "modpack-choice");
+        const check = node("input");
+        check.type = "checkbox";
+        check.value = pack.id;
+        check.checked = selected.has(pack.id);
+        check.onchange = () => {
+          if (check.checked) selected.add(pack.id);
+          else selected.delete(pack.id);
+        };
+        const text = node("span");
+        text.append(node("strong", `${pack.name} ${pack.version}`));
+        if (pack.description)
+          text.append(node("span", pack.description, "modpack-detail"));
+        label.append(check, text);
+        choices.append(label);
+      }
+    }
+    async function refresh() {
+      if (refreshPromise) {
+        refreshAgain = true;
+        return refreshPromise;
+      }
+      refreshPromise = (async () => {
+        controls();
+        try {
+          const response = await fetch("/api/mods");
+          const data = await response.json();
+          if (!response.ok)
+            throw Error(data.error || "Could not load available packs.");
+          packs = data.packs || [];
+          serverModes = data.modes || [];
+          const room = native()?.room;
+          if (room && native()?.socket?.connected) {
+            const response2 = await fetch(
+              `/api/rooms/${encodeURIComponent(room)}/mods`
+            );
+            const profile = await response2.json();
+            if (!response2.ok)
+              throw Error(profile.error || "Could not read room profile.");
+            if (native()?.room !== room || !native()?.socket?.connected) {
+              refreshAgain = true;
+              return;
+            }
+            selectedProfile = profile;
+            selected.clear();
+            for (const pack of profile.mods || [])
+              if (packs.some((candidate) => candidate.id === pack.id))
+                selected.add(pack.id);
+          } else {
+            selectedProfile = null;
+            selected.clear();
+          }
+          renderChoices();
+          renderProfile();
+        } catch (error) {
+          report(error instanceof Error ? error.message : String(error));
+        }
+      })().finally(() => {
+        refreshPromise = null;
+        if (refreshAgain) {
+          refreshAgain = false;
+          void refresh();
+        }
+      });
+      return refreshPromise;
+    }
+    function emit(event, ...args) {
+      return new Promise((resolve, reject) => {
+        const socket = native()?.socket;
+        if (!socket?.connected) return reject(Error("Join a room first."));
+        const timer = setTimeout(
+          () => reject(Error("The server did not answer. Refresh and try again.")),
+          15e3
+        );
+        socket.emit(event, ...args, (result) => {
+          clearTimeout(timer);
+          if (result?.error) reject(Error(result.error.message || result.error));
+          else resolve(result || {});
+        });
+      });
+    }
+    async function hostChange(operation, doneMessage) {
+      if (busy) return;
+      if (!isHost() || !inLobby())
+        return report("Only the host can change packs, while in the lobby.");
+      busy = true;
+      hostAction = true;
+      controls();
+      report("Applying mods\u2026", true);
+      try {
+        const profile = await operation();
+        if (!profile || !Array.isArray(profile.mods))
+          throw Error("The server returned an invalid mod profile.");
+        selectedProfile = profile;
+        ownApproved.add(profile.hash);
+        runtime().approve(profile.hash);
+        for (let i = queue.length - 1; i >= 0; i--)
+          if (queue[i].profile.hash === profile.hash)
+            sendDecision(queue.splice(i, 1)[0], true);
+        await runtime().prepareProfile(profile);
+        await emit("mods:ready", profile.hash);
+        report(doneMessage || "Mods applied.");
+        await refresh();
+      } catch (error) {
+        report(error instanceof Error ? error.message : String(error));
+      } finally {
+        busy = false;
+        hostAction = false;
+        controls();
+        pump();
+      }
+    }
+    window.addEventListener("message", (event) => {
+      if (event.origin !== location.origin || event.source !== frame.contentWindow)
+        return;
+      const message = event.data;
+      if (!message || typeof message.type !== "string") return;
+      if (message.type === "bonk-modpack-request") {
+        if (!message.profile || !Array.isArray(message.profile.mods) || typeof message.profile.hash !== "string")
+          return;
+        queue.push({ id: String(message.id), profile: message.profile });
+        pump();
+      }
+      if (message.type === "bonk-modpack-progress") {
+        report(String(message.message || ""), !message.done);
+        if (loadingConsent) {
+          dialogProgress.textContent = String(message.message || "");
+          dialogProgressBar.hidden = !!message.done;
+          if (message.done && /^Modpack failed:/i.test(String(message.message)))
+            dialogTitle.textContent = "Room modpack could not load";
+        }
+      }
+      if (message.type === "bonk-mod-notice")
+        report(String(message.message || ""));
+      if (message.type === "bonk-modpack-ready") {
+        if (loadingConsent?.hash === message.profile?.hash) {
+          loadingConsent = null;
+          dialog.close();
+          pump();
+        }
+        selectedProfile = message.profile;
+        const counts = /* @__PURE__ */ new Map();
+        for (const entry of message.registrations || [])
+          counts.set(entry.category, (counts.get(entry.category) || 0) + 1);
+        registrations.textContent = counts.size ? "Registered content: " + [...counts].map(([category, count]) => `${category}: ${count}`).join(" \xB7 ") : "";
+        renderProfile();
+      }
+      if (message.type === "bonk-modpack-left") {
+        if (currentConsent) {
+          sendDecision(currentConsent, false);
+          dialog.close();
+          currentConsent = null;
+        }
+        loadingConsent = null;
+        if (dialog.open) dialog.close();
+        for (const request of queue.splice(0)) sendDecision(request, false);
+        selectedProfile = null;
+        registrations.textContent = "";
+        renderProfile();
+        report("Left the modded room.");
+      }
+      if (["bonk-ready", "bonk-connected", "bonk-host"].includes(message.type))
+        void refresh();
+      if (message.type === "bonk-packet" && ["3", "5", "13", "14", "41"].includes(String(message.event)))
+        controls();
+    });
+    window.addEventListener("bonk:workbench-open", () => void refresh());
+    window.addEventListener("bonk:frame-ready", () => void refresh());
+    frame.addEventListener("load", () => {
+      if (dialog.open) dialog.close();
+      currentConsent = null;
+      loadingConsent = null;
+      queue.length = 0;
+      selectedProfile = null;
+      void refresh();
+    });
+    void refresh();
+  }
+  function start() {
+    const frame = document.querySelector("#maingameframe");
+    const mount = document.querySelector("#modpacks");
+    if (!frame || !mount) return false;
+    initialize(frame, mount);
+    return true;
+  }
+  if (!start()) {
+    const observer = new MutationObserver(() => {
+      if (start()) observer.disconnect();
+    });
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+})();
+//# sourceMappingURL=workbench.js.map

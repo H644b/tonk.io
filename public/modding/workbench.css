@@ -1,0 +1,183 @@
+.modpack-tools fieldset {
+  border: 1px solid #a4b2b9;
+  margin: 16px 0 10px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.modpack-tools legend {
+  font-weight: 700;
+  padding: 0 5px;
+}
+.modpack-tools button:disabled {
+  cursor: default;
+}
+.modpack-tools .modpack-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 15px;
+}
+.modpack-tools .modpack-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 10px 0;
+}
+.modpack-choice input[type="checkbox"] {
+  width: auto;
+  margin: 5px 0 0;
+  flex-shrink: 0;
+  accent-color: #007f73;
+}
+.modpack-choice strong,
+.modpack-choice span.modpack-detail {
+  display: block;
+}
+.modpack-choice span.modpack-detail {
+  margin-top: 3px;
+}
+.modpack-detail,
+.modpack-registrations {
+  font-size: 15px;
+  line-height: 1.4;
+}
+.modpack-row,
+.modpack-consent-packs article {
+  padding: 10px 0;
+  border-bottom: 1px solid #a4b2b9;
+}
+.modpack-row p,
+.modpack-consent-packs p {
+  margin: 3px 0 0;
+}
+.modpack-hash {
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  color: #454545;
+}
+.modpack-hash code {
+  font:
+    12px/1.5 ui-monospace,
+    monospace;
+}
+.modpack-status {
+  display: block;
+  min-height: 24px;
+  margin: 12px 0;
+  line-height: 1.4;
+}
+.modpack-tools progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  accent-color: #007f73;
+}
+.modpack-tools progress[hidden] {
+  display: none;
+}
+.modpack-tools progress::-webkit-progress-bar {
+  background: #b7c3c9;
+}
+.modpack-tools progress::-webkit-progress-value {
+  background: #007f73;
+}
+.modpack-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.modpack-legacy {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #a4b2b9;
+}
+.modpack-legacy summary {
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 700;
+}
+.modpack-consent {
+  width: min(560px, calc(100% - 28px));
+  max-height: calc(100dvh - 28px);
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  color: #242424;
+  background: #cfd8dc;
+  box-shadow: 1px 1px 5px -2px rgba(0, 0, 0, 0.63);
+  overflow: auto;
+  font:
+    18px/1.4 Future,
+    sans-serif;
+  scrollbar-color: #795548 #cfd8dc;
+}
+.modpack-consent::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+.modpack-consent header {
+  display: block;
+  margin: 0;
+  padding: 14px 22px;
+  background: #007f73;
+  color: white;
+}
+.modpack-consent h2 {
+  margin: 0;
+  font-size: 24px;
+}
+.modpack-consent-body {
+  padding: 18px 22px 22px;
+}
+.modpack-consent-body p {
+  margin: 0 0 14px;
+}
+.modpack-consent-packs {
+  margin-bottom: 16px;
+}
+.modpack-consent-progress {
+  display: block;
+  margin: 12px 0;
+  font-size: 16px;
+}
+.modpack-consent progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  accent-color: #007f73;
+}
+.modpack-consent progress[hidden] {
+  display: none;
+}
+.modpack-consent-packs article:first-child {
+  padding-top: 0;
+}
+.modpack-consent-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.modpack-consent button {
+  min-height: 40px;
+}
+.modpack-consent :focus-visible {
+  outline: 3px solid #005f56;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .modpack-consent header {
+    padding: 12px 16px;
+  }
+  .modpack-consent-body {
+    padding: 16px;
+  }
+  .modpack-consent-actions {
+    justify-content: stretch;
+  }
+  .modpack-consent-actions button {
+    flex: 1;
+  }
+}

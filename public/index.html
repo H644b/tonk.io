@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bonk Workbench</title>
+    <link rel="icon" href="/game/graphics/tt/favicon-32x32.png" />
+    <link rel="stylesheet" href="/enhancements/shell.css" />
+    <link rel="stylesheet" href="/modding/workbench.css" />
+  </head>
+  <body>
+    <div hidden aria-hidden="true">
+      <span id="header_bonk_playercount"></span
+      ><span id="header_car_playercount"></span>
+      <div id="adboxverticalleftCurse"></div>
+      <div id="adboxverticalCurse"></div>
+    </div>
+    <main>
+      <iframe
+        id="maingameframe"
+        src="/game/"
+        title="Bonk game"
+        allow="fullscreen; autoplay; clipboard-write"
+      ></iframe>
+    </main>
+    <aside
+      id="drawer"
+      role="dialog"
+      aria-modal="true"
+      hidden
+      aria-label="Workbench tools"
+    >
+      <header>
+        <h1>Bonk Workbench</h1>
+        <button id="close" aria-label="Close Workbench">Close</button>
+      </header>
+      <div id="tabs" role="tablist">
+        <button data-tab="rooms" role="tab" aria-selected="true">Rooms</button
+        ><button data-tab="mods" role="tab">Mods</button
+        ><button data-tab="library" role="tab">Library</button
+        ><button data-tab="account" role="tab">Account</button>
+      </div>
+      <section id="rooms" class="tab">
+        <h2>Rooms</h2>
+        <div id="roomlist"></div>
+        <button id="refresh">Refresh rooms</button>
+        <h2>Create a room</h2>
+        <form id="create">
+          <label
+            >Room name<input
+              name="name"
+              value="New room"
+              required
+              maxlength="60" /></label
+          ><label
+            >Mode<select name="mode">
+              <option value="b">Classic</option>
+              <option value="ar">Arrows</option>
+              <option value="sp">Grapple</option>
+              <option value="ard">Death Arrows</option>
+              <option value="bs">Simple</option>
+              <option value="f">Football</option>
+              <option value="v">VTOL</option>
+            </select></label
+          >
+          <div class="fields">
+            <label
+              >Players<input
+                name="maxPlayers"
+                type="number"
+                min="2"
+                max="8"
+                value="8" /></label
+            ><label
+              >Password<input
+                name="password"
+                type="password"
+                autocomplete="off"
+            /></label>
+          </div>
+          <button>Create room</button>
+        </form>
+      </section>
+      <section id="mods" class="tab" hidden>
+        <h2>Appearance</h2>
+        <div id="modlist"></div>
+        <label class="upload"
+          >Import mod<input
+            type="file"
+            id="importmod"
+            accept=".json,application/json" /></label
+        ><button id="exportmod">Download example mod</button>
+        <h3>Worker scripts</h3>
+        <textarea
+          id="modsource"
+          spellcheck="false"
+          aria-label="JavaScript mod source"
+        >
+api.on('ready', () => {
+  api.notify('Moon gravity loaded');
+  api.setRoomRules({ gravity: 6, rounds: 5 });
+});</textarea
+        ><label
+          >Load a JavaScript mod<input
+            type="file"
+            id="loadscript"
+            accept=".js,text/javascript" /></label
+        ><button id="runmod">Run script mod</button
+        ><button id="stopmod">Stop script mod</button
+        ><output id="modstatus"></output>
+      </section>
+      <section id="library" class="tab" hidden>
+        <h2>Maps</h2>
+        <form id="savemap">
+          <label>Map name<input name="name" required maxlength="100" /></label
+          ><label
+            >Bonk map code<textarea
+              name="code"
+              required
+              spellcheck="false"
+            ></textarea></label
+          ><button>Save map</button>
+        </form>
+        <div id="maps"></div>
+      </section>
+      <section id="account" class="tab" hidden>
+        <h2>Account</h2>
+        <div id="profile"></div>
+        <button id="nativeaccount">Account settings</button>
+        <h2>Credits</h2>
+        <p>
+          Bonk.io client and assets © their respective owners. Protocol
+          compatibility based on Manifold by SneezingCactus (MIT).
+        </p>
+      </section>
+      <footer>
+        <output id="status" aria-live="polite"></output>
+      </footer>
+    </aside>
+    <script type="module" src="/enhancements/shell.js"></script>
+    <script defer src="/modding/workbench.js"></script>
+  </body>
+</html>

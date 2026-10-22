@@ -1,0 +1,16 @@
+node_modules/
+dist/
+data/
+*.log
+.DS_Store
+.impeccable/review/
+vendor/**/.git/
+evidence/**/.git/
+
+.env
+.env.*
+!.env.example
+mods/installed/
+mods/host-packs/
+mods/data/
+mods/enabled.json

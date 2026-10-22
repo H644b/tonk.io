@@ -1,0 +1,45 @@
+{
+  "name": "bonk-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server/index.ts",
+    "start": "node dist/server.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "tsc --noEmit",
+    "prepare:client": "node scripts/prepare.mjs",
+    "mods": "node dist/mods.mjs",
+    "pretest": "npm run build",
+    "verify:release": "npm run build && node scripts/verify-release.mjs",
+    "verify:cloud": "npm run build && node scripts/verify-cloud.mjs"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "columnify": "^1.6.0",
+    "cors": "^2.8.6",
+    "esbuild": "^0.28.2",
+    "express": "^4.21.2",
+    "fflate": "^0.8.2",
+    "libsql": "^0.5.29",
+    "moment": "^2.31.0",
+    "socket.io": "^4.8.1",
+    "word-wrap": "^1.2.5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@types/columnify": "^1.5.4",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
+    "@types/node": "^24.19.2",
+    "@types/word-wrap": "^1.2.0",
+    "prettier": "^3.6.2",
+    "socket.io-client": "^4.8.1",
+    "socket.io-client-v2": "npm:socket.io-client@^2.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

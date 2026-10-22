@@ -1,0 +1,106 @@
+html,
+body,
+#pagecontainer {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+#bonkiocontainer {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+#passwarn {
+  display: none !important;
+}
+:focus-visible {
+  outline: 3px solid #009688;
+  outline-offset: 3px;
+}
+::selection {
+  background: #009688;
+  color: white;
+}
+/* Keep the original panels and controls usable on narrow screens. */
+@media (max-width: 600px) {
+  #pretty_bottom_container {
+    width: 100% !important;
+  }
+  .pretty_bottom_button {
+    box-sizing: border-box !important;
+    height: 60px !important;
+    width: 20% !important;
+    padding: 20px 0 !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+  }
+  #pretty_playbutton {
+    font-size: 17px !important;
+  }
+  #newbonklobby {
+    position: fixed !important;
+    width: calc(100% - 16px) !important;
+    height: calc(100% - 80px) !important;
+    top: 8px !important;
+    bottom: auto !important;
+    margin: 0 auto !important;
+    overflow: auto !important;
+    resize: none !important;
+    box-sizing: border-box !important;
+    padding: 4px 4px 60px !important;
+  }
+  #newbonklobby[style*="display: block"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+  #newbonklobby_playerbox,
+  #newbonklobby_specbox,
+  #newbonklobby_settingsbox,
+  #newbonklobby_chatbox {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  #newbonklobby_playerbox {
+    order: 1 !important;
+    height: 190px !important;
+  }
+  #newbonklobby_teamlockbutton {
+    order: 2 !important;
+    position: relative !important;
+    inset: auto !important;
+    align-self: flex-end !important;
+    width: 28px !important;
+    min-height: 35px !important;
+    margin: -30px 0 -30px !important;
+    flex-shrink: 0 !important;
+  }
+  #newbonklobby_specbox {
+    order: 3 !important;
+    height: 120px !important;
+  }
+  #newbonklobby_settingsbox {
+    order: 4 !important;
+    height: 300px !important;
+  }
+  #newbonklobby_chatbox {
+    order: 5 !important;
+    height: 220px !important;
+  }
+  #newbonklobby .newbonklobby_playerentry_half {
+    width: 100% !important;
+  }
+  .newbonklobby_playerentry_name,
+  .newbonklobby_playerentry_level {
+    right: 46px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}

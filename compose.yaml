@@ -1,0 +1,24 @@
+services:
+  game:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3210
+      BONK_DATA_PATH: /app/data/bonk.sqlite
+      BONK_MODS_DIR: /app/mods
+      TRUST_PROXY: ${TRUST_PROXY:-}
+      BONK_DATABASE_URL: ${BONK_DATABASE_URL:-}
+      BONK_DATABASE_AUTH_TOKEN: ${BONK_DATABASE_AUTH_TOKEN:-}
+      BONK_CURATORS: ${BONK_CURATORS:-}
+    ports:
+      - "127.0.0.1:3210:3210"
+    volumes:
+      - game-data:/app/data
+      - game-mods:/app/mods
+    stop_grace_period: 15s
+volumes:
+  game-data:
+  game-mods:

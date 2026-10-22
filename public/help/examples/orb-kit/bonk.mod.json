@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2,
+  "api": 2,
+  "id": "orb-kit",
+  "name": "Orb Kit",
+  "version": "1.0.0",
+  "description": "A custom textured physics entity, component, property, and host spawn command.",
+  "author": "Bonk Workbench example",
+  "entrypoints": { "client": "client.js" },
+  "dependencies": {},
+  "assets": { "orb": "assets/orb.svg" }
+}

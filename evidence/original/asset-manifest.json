@@ -1,0 +1,596 @@
+{
+  "assets": [
+    {
+      "path": "GameResources.js",
+      "url": "https://bonk.io/GameResources.js",
+      "bytes": 3621667,
+      "sha256": "ce5fe7d6ac02b57614cc68e8260d510f72e4ec4fcb87db5f0b4cc30f51271ccd"
+    },
+    {
+      "path": "css/checkbox.css",
+      "url": "https://bonk.io/css/checkbox.css",
+      "bytes": 1950,
+      "sha256": "6e410325926b9bcbd3fb2da6f34e6de9a6c3fb1649c002172c3dc9581eab382a"
+    },
+    {
+      "path": "css/classicactive.css",
+      "url": "https://bonk.io/css/classicactive.css",
+      "bytes": 2144,
+      "sha256": "1b7269bd6f3d2d734cded85f0df92cab73d7ed61b0200f21532b84ee879c80cd"
+    },
+    {
+      "path": "css/ingamechat.css",
+      "url": "https://bonk.io/css/ingamechat.css",
+      "bytes": 1720,
+      "sha256": "d7589ffdc3c1f799ca56de81df8c09dadb06d7df2a1dd90a9e9b0088546092cc"
+    },
+    {
+      "path": "css/leveleditor.css",
+      "url": "https://bonk.io/css/leveleditor.css",
+      "bytes": 27520,
+      "sha256": "7cca521085555f79e04551e2a5c3586fdc306fed020b140d3a82732b42705ccf"
+    },
+    {
+      "path": "css/mapeditor.css",
+      "url": "https://bonk.io/css/mapeditor.css",
+      "bytes": 22164,
+      "sha256": "a47fbf3c13bd91b6a584865fcbec6f708bde08a32ac35510761c000e6e8e7bb8"
+    },
+    {
+      "path": "css/maploadwindow.css",
+      "url": "https://bonk.io/css/maploadwindow.css",
+      "bytes": 11938,
+      "sha256": "99bef6f242dcc22dbd32c214b530fe34b73074ec9a98c5955f19219c85f8cb51"
+    },
+    {
+      "path": "css/newbonklobby.css",
+      "url": "https://bonk.io/css/newbonklobby.css",
+      "bytes": 17958,
+      "sha256": "c788dc559f3014be0ce6ddb1e0a141ab0f99f487e61250357c7fb943093beaf3"
+    },
+    {
+      "path": "css/pagelayout.css",
+      "url": "https://bonk.io/css/pagelayout.css",
+      "bytes": 16735,
+      "sha256": "335eb2bbd909338276d35640170d2db2462170f8e6f61a2c30e7e90fef374302"
+    },
+    {
+      "path": "css/prettymenu.css",
+      "url": "https://bonk.io/css/prettymenu.css",
+      "bytes": 12862,
+      "sha256": "294c7a4c215c322019641514f9a01ec2a0e394caf9c9ddb74d7f95231c72bffb"
+    },
+    {
+      "path": "css/roomlist.css",
+      "url": "https://bonk.io/css/roomlist.css",
+      "bytes": 13274,
+      "sha256": "962d92ce90b3447655ea5b4b8d14ccee41da8e4d2f612420768f4e7d250e3320"
+    },
+    {
+      "path": "css/simplemenu.css",
+      "url": "https://bonk.io/css/simplemenu.css",
+      "bytes": 33916,
+      "sha256": "9a2dfb988ad1c821821d87d0d9d60e1b3fad30abd4e08155655881490f853a7d"
+    },
+    {
+      "path": "css/skineditor.css",
+      "url": "https://bonk.io/css/skineditor.css",
+      "bytes": 10383,
+      "sha256": "408ff4a2197517f34be3a05ba37745e3ffb53704735b180fedad7040954c5cb8"
+    },
+    {
+      "path": "fonts/fptb.otf",
+      "url": "https://bonk.io/fonts/fptb.otf",
+      "bytes": 129072,
+      "sha256": "b200854c47c070b4113c619e836fa1ccf6eb33239992b9c36a31f818e11c8416"
+    },
+    {
+      "path": "fonts/fptbook.otf",
+      "url": "https://bonk.io/fonts/fptbook.otf",
+      "bytes": 112916,
+      "sha256": "85be74ee15c50c39cb5601ec40aee5fc3c79090582047140fc0a9827cc3f7dab"
+    },
+    {
+      "path": "fonts/fptbook_fixed_5.otf",
+      "url": "https://bonk.io/fonts/fptbook_fixed_5.otf",
+      "bytes": 81856,
+      "sha256": "a657aa794f6f642167e6a03133e91ccf274821843d0e120e3f0651a3806fd916"
+    },
+    {
+      "path": "fonts/fptl.otf",
+      "url": "https://bonk.io/fonts/fptl.otf",
+      "bytes": 115904,
+      "sha256": "e7a52027b9b5978e6a6f83b096aea906b0e79399145e65e19024f94967a2411f"
+    },
+    {
+      "path": "fonts/fptmed.otf",
+      "url": "https://bonk.io/fonts/fptmed.otf",
+      "bytes": 118072,
+      "sha256": "5ecca92be615b56188e0f45ec8259b024c4655b497e8e5694feee11cbf84e0d3"
+    },
+    {
+      "path": "fonts/futurept_7a255.otf",
+      "url": "https://bonk.io/fonts/futurept_7a255.otf",
+      "bytes": 122904,
+      "sha256": "507d9394f0d46deeafb767222b6eaa2b5a303b1ee4e61f749a268b4f5cb0213f"
+    },
+    {
+      "path": "graphics/arrow-left.png",
+      "url": "https://bonk.io/graphics/arrow-left.png",
+      "bytes": 2924,
+      "sha256": "effb5b07d12c91e6f979cfc3d9f9d31b86c084abde00acf1fe93083e16eb61a2"
+    },
+    {
+      "path": "graphics/check.svg",
+      "url": "https://bonk.io/graphics/check.svg",
+      "bytes": 363,
+      "sha256": "a1a97ebe5984afeefd231d36be0290457a3f3f754783333f7d466e44f2e750f6"
+    },
+    {
+      "path": "graphics/chevron-left.png",
+      "url": "https://bonk.io/graphics/chevron-left.png",
+      "bytes": 416,
+      "sha256": "8a60115afc79ed76369e9fd9de778f7e0cac1e9e91cd1f0ba5a5501023f86930"
+    },
+    {
+      "path": "graphics/chevron-right.png",
+      "url": "https://bonk.io/graphics/chevron-right.png",
+      "bytes": 397,
+      "sha256": "0b2fd7355093330c9fb4967d5de0e2ec3642fadae5ca42d146ae201e963feba9"
+    },
+    {
+      "path": "graphics/close.png",
+      "url": "https://bonk.io/graphics/close.png",
+      "bytes": 448,
+      "sha256": "dd92e5449274cf69505b43062d19f967a493aed73d61173ac8a2276c41b1e35e"
+    },
+    {
+      "path": "graphics/close.svg",
+      "url": "https://bonk.io/graphics/close.svg",
+      "bytes": 417,
+      "sha256": "4626150b590627191b9fd8be86c73e9bdb21ec344d5651f576f8bda3483a3445"
+    },
+    {
+      "path": "graphics/closecross_white.png",
+      "url": "https://bonk.io/graphics/closecross_white.png",
+      "bytes": 2854,
+      "sha256": "c1b5882a4dff5b89c707866ca4beb00c8b02565374205588b8acd30456e7bc0d"
+    },
+    {
+      "path": "graphics/cog.png",
+      "url": "https://bonk.io/graphics/cog.png",
+      "bytes": 657,
+      "sha256": "c0d6bf1105272429c2f107f5ee50053a5fb21f6c4903ef249feb50c943cbc2ae"
+    },
+    {
+      "path": "graphics/content-copy.png",
+      "url": "https://bonk.io/graphics/content-copy.png",
+      "bytes": 2912,
+      "sha256": "b03dde2a192661046eb8f3a4dffba430c483a35a9a92561c99a41ed33d8fd59b"
+    },
+    {
+      "path": "graphics/delete-alert.png",
+      "url": "https://bonk.io/graphics/delete-alert.png",
+      "bytes": 432,
+      "sha256": "538050cad521826fa9d0bd3144eb896f770cc55220c095e2efeb72631dba4a3e"
+    },
+    {
+      "path": "graphics/delete.png",
+      "url": "https://bonk.io/graphics/delete.png",
+      "bytes": 413,
+      "sha256": "ed4b2382c452d6ed97cde046ed57ddf3ef127127475107a0357b3d088d19a7c4"
+    },
+    {
+      "path": "graphics/dropdownarrow_light.png",
+      "url": "https://bonk.io/graphics/dropdownarrow_light.png",
+      "bytes": 2872,
+      "sha256": "ca7d470aed295f232296ebcc325a8a169769758f614fa7f9177b1c328b990584"
+    },
+    {
+      "path": "graphics/exit-run.png",
+      "url": "https://bonk.io/graphics/exit-run.png",
+      "bytes": 659,
+      "sha256": "4c6f6be6138405c9b49174a0ef8b5df90af1ff62b4c3dc9501a5eed096f007e5"
+    },
+    {
+      "path": "graphics/gamepad-variant.png",
+      "url": "https://bonk.io/graphics/gamepad-variant.png",
+      "bytes": 495,
+      "sha256": "f3e56bbf831846a3712b188768e1f7b1ef5b61257186eb78e7334d73c025b39f"
+    },
+    {
+      "path": "graphics/grid3.png",
+      "url": "https://bonk.io/graphics/grid3.png",
+      "bytes": 2893,
+      "sha256": "1fe587c822b6a637072330df510ed6a7f16172c2bd5fbd894e271e8c6b959121"
+    },
+    {
+      "path": "graphics/help-circle-outline.png",
+      "url": "https://bonk.io/graphics/help-circle-outline.png",
+      "bytes": 722,
+      "sha256": "33e85687e1d187adc0c786de79e159f85cb22f10ab13e69ef3e71f1676003f6e"
+    },
+    {
+      "path": "graphics/help-circle-strikethrough.png",
+      "url": "https://bonk.io/graphics/help-circle-strikethrough.png",
+      "bytes": 3271,
+      "sha256": "33acdd8e25afaff11c80ab513a36881b18e649e87a010bf40016becb347b555d"
+    },
+    {
+      "path": "graphics/lock-outline.svg",
+      "url": "https://bonk.io/graphics/lock-outline.svg",
+      "bytes": 574,
+      "sha256": "ae45dacd986ff30e0c1e7139ca949f73115f7cc4951757166bfdea2af43bae5f"
+    },
+    {
+      "path": "graphics/magnify-minus.png",
+      "url": "https://bonk.io/graphics/magnify-minus.png",
+      "bytes": 546,
+      "sha256": "9aa351a0e6a5298475eb445b462b9439963fdcdd6780d545938e1a2ad7d31c47"
+    },
+    {
+      "path": "graphics/magnify-plus.png",
+      "url": "https://bonk.io/graphics/magnify-plus.png",
+      "bytes": 555,
+      "sha256": "978b208e619a8fcc52a750800777f84bd660379d0e776efed411a70955c3791c"
+    },
+    {
+      "path": "graphics/mapedtior_colorpicker_crosshair.png",
+      "url": "https://bonk.io/graphics/mapedtior_colorpicker_crosshair.png",
+      "bytes": 2863,
+      "sha256": "406f516bb71dfa97668f67befd96a75887d085db8d2ca5e5d6b1e70a66a3bde9"
+    },
+    {
+      "path": "graphics/menu-down.png",
+      "url": "https://bonk.io/graphics/menu-down.png",
+      "bytes": 375,
+      "sha256": "c1106e804a78a1287a4f45f889017dd2dc39e110bc4afdc0efa11a977ea41a04"
+    },
+    {
+      "path": "graphics/menu-up.png",
+      "url": "https://bonk.io/graphics/menu-up.png",
+      "bytes": 373,
+      "sha256": "bbb4885d25fd1e6389ba95f56cc46ba0624742f216c308dc0719dcacfa190233"
+    },
+    {
+      "path": "graphics/musicoff.png",
+      "url": "https://bonk.io/graphics/musicoff.png",
+      "bytes": 284,
+      "sha256": "90e373de27f0a03508c66d5ac502d83ebda0e9bc0c752da5e4d22b22ced4a3e3"
+    },
+    {
+      "path": "graphics/musicon.png",
+      "url": "https://bonk.io/graphics/musicon.png",
+      "bytes": 166,
+      "sha256": "6cc1083ec7bacaa94d80efbec7234f14d44ca36340cb8f94d609f01a0e08c02b"
+    },
+    {
+      "path": "graphics/overscan.png",
+      "url": "https://bonk.io/graphics/overscan.png",
+      "bytes": 519,
+      "sha256": "0f59696ca4d4fb5058c73a73cf88d086492ee97610e1eaea8fd495f67bd7db32"
+    },
+    {
+      "path": "graphics/play.png",
+      "url": "https://bonk.io/graphics/play.png",
+      "bytes": 460,
+      "sha256": "eae1b64635457f2f65cf1a8ba649a49810f09eb06c18ad6fbdb7404cf65113eb"
+    },
+    {
+      "path": "graphics/plus-box.png",
+      "url": "https://bonk.io/graphics/plus-box.png",
+      "bytes": 445,
+      "sha256": "313710769119e2175c07be7f5eed881165b2e7d7900c39ab9f553545f0b56301"
+    },
+    {
+      "path": "graphics/redo.png",
+      "url": "https://bonk.io/graphics/redo.png",
+      "bytes": 521,
+      "sha256": "94e1bab9ba5898e6e3814b19ed54162be7400ab2575e3ebef82460524af7f5e9"
+    },
+    {
+      "path": "graphics/share-variant-outline.svg",
+      "url": "https://bonk.io/graphics/share-variant-outline.svg",
+      "bytes": 950,
+      "sha256": "75aa690ed5c3d1422a2d3a829d10e89d24046de171c3533eec487f611fa0e8dc"
+    },
+    {
+      "path": "graphics/skip-next.png",
+      "url": "https://bonk.io/graphics/skip-next.png",
+      "bytes": 424,
+      "sha256": "c3ab29a1a2e660662eae070986b20a2701ae86c0340fdbf79757ad8a541519ce"
+    },
+    {
+      "path": "graphics/skip-previous.png",
+      "url": "https://bonk.io/graphics/skip-previous.png",
+      "bytes": 444,
+      "sha256": "2c52d5c6df6f9ed960eb4b54370b6fe405bd30e8054857a3572f85e130f1639b"
+    },
+    {
+      "path": "graphics/star-check.svg",
+      "url": "https://bonk.io/graphics/star-check.svg",
+      "bytes": 465,
+      "sha256": "3be8d7050a58d98280408cd91e3c78824354ef8214a15f7c1aeeca010ca00216"
+    },
+    {
+      "path": "graphics/star-disabled.svg",
+      "url": "https://bonk.io/graphics/star-disabled.svg",
+      "bytes": 428,
+      "sha256": "eb08a969d17c2bfcef16e0f6d0de7184b480260f7abde6e6a274936a4d4c8fb7"
+    },
+    {
+      "path": "graphics/star.svg",
+      "url": "https://bonk.io/graphics/star.svg",
+      "bytes": 408,
+      "sha256": "7d764412d751a11db05907685c3200ce6ec81a980ae1c35dc5c567e8dd611087"
+    },
+    {
+      "path": "graphics/stop.png",
+      "url": "https://bonk.io/graphics/stop.png",
+      "bytes": 367,
+      "sha256": "08b0160bdb494b0867ece9ec4d505c7ff4042f83b84fa72ab48c59763d194869"
+    },
+    {
+      "path": "graphics/thumb-up.png",
+      "url": "https://bonk.io/graphics/thumb-up.png",
+      "bytes": 515,
+      "sha256": "1439c558147a1ecda9f18aac9e27b2cb07ad0a8c7ae44e36fa3509ff344a03b3"
+    },
+    {
+      "path": "graphics/thumb_arrows.jpg",
+      "url": "https://bonk.io/graphics/thumb_arrows.jpg",
+      "bytes": 59101,
+      "sha256": "3c87c8829e7c6fb4485742c5a479affde2534e658cbbcae690d30323ba3687eb"
+    },
+    {
+      "path": "graphics/thumb_arrows_nb.jpg",
+      "url": "https://bonk.io/graphics/thumb_arrows_nb.jpg",
+      "bytes": 73626,
+      "sha256": "67f6c1da3b0243ae2dfce5ef705bdc67ce1b4f7c6e510cc44ca1e046e6cb198f"
+    },
+    {
+      "path": "graphics/thumb_classic.jpg",
+      "url": "https://bonk.io/graphics/thumb_classic.jpg",
+      "bytes": 51713,
+      "sha256": "aeea58b69b6125b951c9072968b5279e8eff682c1edef82d7af6918d17e52807"
+    },
+    {
+      "path": "graphics/thumb_classic_nb.jpg",
+      "url": "https://bonk.io/graphics/thumb_classic_nb.jpg",
+      "bytes": 65723,
+      "sha256": "62ac1299b8c30ac3eadd4b572d653a1daa95aefa8d197143777c0d0405576530"
+    },
+    {
+      "path": "graphics/thumb_custom_2.jpg",
+      "url": "https://bonk.io/graphics/thumb_custom_2.jpg",
+      "bytes": 52164,
+      "sha256": "94d960f3be0756d8203864892d5c4b566a8ffc2a336981562b30ee05404d7580"
+    },
+    {
+      "path": "graphics/thumb_grapple.jpg",
+      "url": "https://bonk.io/graphics/thumb_grapple.jpg",
+      "bytes": 57475,
+      "sha256": "cd0883175237887a1150d5db7be06c7f6bb87c9acdb381d6d3be81ca1ff8a0e1"
+    },
+    {
+      "path": "graphics/thumb_grapple_nb.jpg",
+      "url": "https://bonk.io/graphics/thumb_grapple_nb.jpg",
+      "bytes": 64053,
+      "sha256": "bc32b182ecb7d3093799427e08d9557d6f7af347e12bd9da38242bbb699c78ad"
+    },
+    {
+      "path": "graphics/tt/cork2.jpg",
+      "url": "https://bonk.io/graphics/tt/cork2.jpg",
+      "bytes": 56360,
+      "sha256": "8b38b70032c5526cf63a0f106966a81ac78e01df9cd533845145ace4c6ffc4e5"
+    },
+    {
+      "path": "graphics/tt/whitealpha3.png",
+      "url": "https://bonk.io/graphics/tt/whitealpha3.png",
+      "bytes": 2864,
+      "sha256": "152f603f89e955dba78b78689e15bdaef088f3b594a097b0a899b628e69815f4"
+    },
+    {
+      "path": "graphics/tt/woodcutsmall.png",
+      "url": "https://bonk.io/graphics/tt/woodcutsmall.png",
+      "bytes": 14181,
+      "sha256": "f87e1955d7a6502bf458490eee0b7a35b8afd37a6e482db77d95e0a001b26946"
+    },
+    {
+      "path": "graphics/undo.png",
+      "url": "https://bonk.io/graphics/undo.png",
+      "bytes": 516,
+      "sha256": "f60fcc27f2d632fa521c829f6782af2a31ac879341e0390387eb8dfb21f2e09b"
+    },
+    {
+      "path": "graphics/video-wireless-4.png",
+      "url": "https://bonk.io/graphics/video-wireless-4.png",
+      "bytes": 3082,
+      "sha256": "e47d4e7080a7642ef6d5f752e603e6b80c8135c47b21498dcf425a700a3c2e4d"
+    },
+    {
+      "path": "graphics/volumeoff.png",
+      "url": "https://bonk.io/graphics/volumeoff.png",
+      "bytes": 401,
+      "sha256": "1cffe840e386ee5827489b30727f81e68226e64f8c97efc2116fa37c30452bc4"
+    },
+    {
+      "path": "graphics/volumeon.png",
+      "url": "https://bonk.io/graphics/volumeon.png",
+      "bytes": 285,
+      "sha256": "2c70dffece094c64c47b58173d94476b16cc34763b2ced6a7fe1da22994d4e28"
+    },
+    {
+      "path": "graphics/vote_down_16.png",
+      "url": "https://bonk.io/graphics/vote_down_16.png",
+      "bytes": 3129,
+      "sha256": "03970e663be87daf56f2f77d3eea0f3699aba6c073edd72113cb5e382ce0a23b"
+    },
+    {
+      "path": "graphics/vote_up_16.png",
+      "url": "https://bonk.io/graphics/vote_up_16.png",
+      "bytes": 3100,
+      "sha256": "b302626d44da98edc70291f536af8ee4df0e9a23269b26600bdd9c78b1280ff9"
+    },
+    {
+      "path": "graphics/whistle.svg",
+      "url": "https://bonk.io/graphics/whistle.svg",
+      "bytes": 533,
+      "sha256": "5ed76fea7c22c93aa65dce2a7e6373b06074780744691b97d8ee0c2aee359f35"
+    },
+    {
+      "path": "js/SafeTrig.js",
+      "url": "https://bonk.io/js/SafeTrig.js",
+      "bytes": 989,
+      "sha256": "d1d09e414ba4c16bfb9ce8492f135bbc87b581c364a3b91019c4f93a18557b08"
+    },
+    {
+      "path": "js/Tween.js",
+      "url": "https://bonk.io/js/Tween.js",
+      "bytes": 15416,
+      "sha256": "36d13dd2f704fc3acca55f20fc1b794e091aae22b652974cab9225a8bffea9fe"
+    },
+    {
+      "path": "js/alpha2s.js",
+      "url": "https://bonk.io/js/alpha2s.js",
+      "bytes": 2699132,
+      "sha256": "e549ed7b6840a908bc0e9c595321aa5e9dcfa787190bae9b60938e32dfa65c8e"
+    },
+    {
+      "path": "js/anime.min.js",
+      "url": "https://bonk.io/js/anime.min.js",
+      "bytes": 17324,
+      "sha256": "8413288d9b962a87027e5c9a1bc4f5f4a06af4e95394adfd093c5bf005162a16"
+    },
+    {
+      "path": "js/colorpicker/color-picker.css",
+      "url": "https://bonk.io/js/colorpicker/color-picker.css",
+      "bytes": 2335,
+      "sha256": "92d04ff8f7a0fe4baae097838517d35f5cf3dd9a19864562cc3bf98b834c6030"
+    },
+    {
+      "path": "js/colorpicker/color-picker.js",
+      "url": "https://bonk.io/js/colorpicker/color-picker.js",
+      "bytes": 18155,
+      "sha256": "1b6a45614e6e75a59f7758d00247130cdaaa1fcdab2e3a3450a3943461ab08f6"
+    },
+    {
+      "path": "js/howler.min.js",
+      "url": "https://bonk.io/js/howler.min.js",
+      "bytes": 34747,
+      "sha256": "125eddcb1755a757b5bf4c608ebae9cebe7e04edbda703f441f978d150df7e22"
+    },
+    {
+      "path": "js/howler.spatial.min.js",
+      "url": "https://bonk.io/js/howler.spatial.min.js",
+      "bytes": 9336,
+      "sha256": "37ce2799bd2fd0ab6c6815f2251d34530d9dcc516feaf5f2679e5f9ee626dd20"
+    },
+    {
+      "path": "js/jQuery-FontSpy.js",
+      "url": "https://bonk.io/js/jQuery-FontSpy.js",
+      "bytes": 2397,
+      "sha256": "6f9152179c6758999eaecf7afe72f9c6c6c87f16a03d82fa8cefba8d3027f60b"
+    },
+    {
+      "path": "js/jquery-3.3.1.min.js",
+      "url": "https://bonk.io/js/jquery-3.3.1.min.js",
+      "bytes": 86927,
+      "sha256": "160a426ff2894252cd7cebbdd6d6b7da8fcd319c65b70468f10b6690c45d02ef"
+    },
+    {
+      "path": "js/lz-string.min.js",
+      "url": "https://bonk.io/js/lz-string.min.js",
+      "bytes": 4719,
+      "sha256": "9d1a0ef07a2ea5faa8cd4afb60a0518075e6771e341e5ff4e0e481cefedeecbf"
+    },
+    {
+      "path": "js/moment-timezone-with-data-10-year-range.min.js",
+      "url": "https://bonk.io/js/moment-timezone-with-data-10-year-range.min.js",
+      "bytes": 32782,
+      "sha256": "eab684eb76b05b5ca8a953efb67f14a7ebc4691f78fd6d1c29171354b93eb85a"
+    },
+    {
+      "path": "js/moment.min.js",
+      "url": "https://bonk.io/js/moment.min.js",
+      "bytes": 53324,
+      "sha256": "e22419e8154be2a34a950dbb4c4c448413751c53ef02f00c6c56af28aa2c4964"
+    },
+    {
+      "path": "js/pako.js",
+      "url": "https://bonk.io/js/pako.js",
+      "bytes": 221496,
+      "sha256": "c26493b9040d943b9e101e1e642ca1f535e6337a3053186934ff86e7f8dcfe67"
+    },
+    {
+      "path": "js/pixi-filters-311.js",
+      "url": "https://bonk.io/js/pixi-filters-311.js",
+      "bytes": 85075,
+      "sha256": "a5d4ea329d7a926ebae0acb2cb62ba9488d0890af6cb74ec29e78acb24ccd85e"
+    },
+    {
+      "path": "js/pixi-legacy-540.min.js",
+      "url": "https://bonk.io/js/pixi-legacy-540.min.js",
+      "bytes": 606699,
+      "sha256": "4ec11d199db234f6a26a065f14fd481ccee2e4b3397ab54044d5f9c25a687f7f"
+    },
+    {
+      "path": "js/pson/PSON.min.js",
+      "url": "https://bonk.io/js/pson/PSON.min.js",
+      "bytes": 4926,
+      "sha256": "6660644732cba78d26000907e351f7aa15ada157922779ee27888a0999f91d19"
+    },
+    {
+      "path": "js/pson/base64ArrayBuffer.js",
+      "url": "https://bonk.io/js/pson/base64ArrayBuffer.js",
+      "bytes": 3025,
+      "sha256": "b0f541a4f3d3e6f29e31cbcff0c0fab81778afd490f04b9ff623a2a5d0098287"
+    },
+    {
+      "path": "js/pson/base64js.min.js",
+      "url": "https://bonk.io/js/pson/base64js.min.js",
+      "bytes": 2370,
+      "sha256": "e8dab711100d645179ffbab703bbd20c72adb6cb5f1e27947f9f9e168f56e08d"
+    },
+    {
+      "path": "js/pson/bytebuffer.min.js",
+      "url": "https://bonk.io/js/pson/bytebuffer.min.js",
+      "bytes": 44835,
+      "sha256": "10f18457a3b180efcd640fcf2cea3c619c0d3bae952cdff514974da6e1c9b1fa"
+    },
+    {
+      "path": "js/pson/long.js",
+      "url": "https://bonk.io/js/pson/long.js",
+      "bytes": 10421,
+      "sha256": "3dd1844abdb7bf47915c390aa4d376af4c99931408af54448eb2bf9f67eb4396"
+    },
+    {
+      "path": "js/require.js",
+      "url": "https://bonk.io/js/require.js",
+      "bytes": 17695,
+      "sha256": "4948c3fe4b57cd92118ec7b89deb99ff0eb2586a02c5f454df21c1ecfc144c81"
+    },
+    {
+      "path": "js/timesync.min.js",
+      "url": "https://bonk.io/js/timesync.min.js",
+      "bytes": 22833,
+      "sha256": "5628b6060b89e32df5cd57c51cf1e871aea2c12e78d5cfe2375a7f9d64897b68"
+    },
+    {
+      "path": "graphics/host_tab.png",
+      "url": "https://bonk.io/graphics/host_tab.png",
+      "bytes": 2875,
+      "sha256": "9cb84d433580f7b01c05a10d5b777963fa1886a0f6cd6a33e0ad78590484b0bd"
+    }
+  ],
+  "failures": [
+    {
+      "url": "js/colorpicker/color-picker-h.png",
+      "error": "Command '['curl', '--fail', '--location', '--silent', '--max-time', '30', 'https://bonk.io/js/colorpicker/color-picker-h.png']' returned non-zero exit status 56."
+    },
+    {
+      "url": "js/colorpicker/color-picker-sv.png",
+      "error": "Command '['curl', '--fail', '--location', '--silent', '--max-time', '30', 'https://bonk.io/js/colorpicker/color-picker-sv.png']' returned non-zero exit status 56."
+    }
+  ]
+}

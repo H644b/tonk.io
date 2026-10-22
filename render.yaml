@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: bonk-workbench
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24.22.1"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: loopback,linklocal,uniquelocal
+      - key: BONK_DATABASE_URL
+        sync: false
+      - key: BONK_DATABASE_AUTH_TOKEN
+        sync: false
+      - key: BONK_DATA_PATH
+        value: /tmp/bonk-data/bonk.sqlite
+      - key: BONK_MODS_DIR
+        value: /tmp/bonk-mods
