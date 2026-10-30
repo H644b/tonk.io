@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-30T06:39:54.582Z",
+  "origin": "https://tonk.timur-radjabov1.workers.dev",
+  "node": "v26.11.1",
+  "resume": false,
+  "checks": [
+    "health responds on the target origin",
+    "two accounts register, log out and sign back in; session cookie flags verified",
+    "authenticated private map storage round-trips",
+    "deployed engine, mod runtime and Help match the tested build bytes",
+    "two authenticated native EIO3 WebSocket clients join and relay chat, readiness and input",
+    "host archive upload, peer code/assets downloads, SHA-256 identity and readiness barrier pass",
+    "host migration and final-player room/archive cleanup pass"
+  ],
+  "status": "passed",
+  "publicDeploymentVerified": true,
+  "browserGameplayVerified": false,
+  "scope": "HTTP accounts and native Socket.IO transport; gameplay and consent UI require two real browser clients"
+}

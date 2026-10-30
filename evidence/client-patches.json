@@ -1,0 +1,12 @@
+{
+  "sha256": "e549ed7b6840a908bc0e9c595321aa5e9dcfa787190bae9b60938e32dfa65c8e",
+  "patches": [
+    "player data",
+    "map encoder",
+    "mode list",
+    "transport",
+    "initialization"
+  ],
+  "source": "https://bonk.io/js/alpha2s.js",
+  "protocolReference": "https://github.com/SneezingCactus/manifold-client"
+}

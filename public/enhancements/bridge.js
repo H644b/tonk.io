@@ -3,6 +3,7 @@ window.manifold = {
   active: true,
   room: null,
   socket: null,
+  bots: [],
   confirmedReceipts: new Set(),
   confirmedRound(receipt) {
     if (
@@ -46,6 +47,11 @@ window.manifold = {
       };
       const socket = io(location.origin, options);
       self.socket = socket;
+      self.playing = false;
+      socket.on("15",()=>self.playing=true);
+      socket.on("13",()=>self.playing=false);
+      socket.on("wb:bots", (data) => { self.bots = Array.isArray(data?.bots) ? data.bots : []; parent.postMessage({type:"tonk-bots", ...data},location.origin); });
+      socket.on("wb:moderation", (data) => { parent.postMessage({type:"tonk-moderation",message:String(data?.message||"Room closed.")},location.origin); });
       window.BonkMods?.bindSocket(socket);
       const emit = socket.emit.bind(socket),
         on = socket.on.bind(socket);
@@ -82,6 +88,7 @@ window.manifold = {
           callback = (...args) => {
             if (event == 3) {
               self.localId = args[0];
+              self.playing = args[3] > 0;
               self.hostId = args[1];
             }
             if (event == 6) self.hostId = args[1];
@@ -147,7 +154,11 @@ window.manifold = {
       socket.on("disconnect", () => {
         self.localId = null;
         self.hostId = -1;
+        self.room = null;
+        self.playing = false;
+        self.bots = [];
         self.confirmedReceipts.clear();
+        parent.postMessage({ type: "bonk-disconnected" }, location.origin);
         parent.postMessage(
           { type: "bonk-host", isHost: false },
           location.origin,
@@ -424,7 +435,7 @@ window.addEventListener("message", async (e) => {
       ),
     );
   }
-  if (e.data.type === "bonk-join") {
+  if (e.data.type === "bonk-join" || e.data.type === "bonk-room-created") {
     window.manifold.joinRoom(e.data.room);
   }
 });

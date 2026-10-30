@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-30T06:50:20.205Z",
+  "origin": "https://tonk.timur-radjabov1.workers.dev",
+  "checks": [
+    "H644b owns Admin; member access and cross-origin changes are denied",
+    "Admin finds private non-native maps, removes them from loading, and restores them",
+    "Native room host selects bot count/difficulty; peers and over-capacity requests are denied",
+    "Admin kicks a native peer and closes a room containing bots",
+    "Curator changes, suspension, session revocation, blocked login and unban work",
+    "Administrative mutations have an audit trail"
+  ],
+  "status": "passed"
+}

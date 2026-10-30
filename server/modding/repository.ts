@@ -29,8 +29,10 @@ export class ModRepository {
   constructor(
     readonly directory = path.resolve(process.env.BONK_MODS_DIR || "mods"),
     persistent = true,
+    persistence?: CloudFiles,
+    readonly maxPackBytes = MAX_PACK_BYTES,
   ) {
-    this.persistence = persistent ? cloudFiles() : undefined;
+    this.persistence = persistence ?? (persistent ? cloudFiles() : undefined);
     fs.mkdirSync(path.join(directory, "installed"), { recursive: true });
     this.persistence?.restore(directory);
   }
@@ -52,7 +54,7 @@ export class ModRepository {
     const add = (name: string, bytes: Uint8Array) => {
       validatePath(name);
       total += bytes.length;
-      if (total > MAX_PACK_BYTES || Object.keys(files).length >= MAX_FILES)
+      if (total > this.maxPackBytes || Object.keys(files).length >= MAX_FILES)
         throw Error("Pack exceeds 64MB or 2048 files.");
       files[name] = bytes;
     };
@@ -78,23 +80,25 @@ export class ModRepository {
       walk(location);
     } else {
       const zipped = fs.readFileSync(location);
-      if (zipped.length > MAX_PACK_BYTES) throw Error("Archive exceeds 64MB.");
+      if (zipped.length > this.maxPackBytes) throw Error("Archive exceeds 64MB.");
       let estimated = 0,
         count = 0;
+      const limit=this.maxPackBytes;
       const extracted = unzipSync(zipped, {
         filter(file) {
           if (file.name.endsWith("/")) return false;
           validatePath(file.name);
           estimated += file.originalSize;
-          if (++count > MAX_FILES || estimated > MAX_PACK_BYTES)
+          if (++count > MAX_FILES || estimated > limit)
             throw Error("Expanded pack exceeds limits.");
           return true;
         },
       });
       for (const [name, bytes] of Object.entries(extracted)) add(name, bytes);
     }
+    files["bonk.mod.json"] ??= files["tonk.mod.json"];
     if (!files["bonk.mod.json"])
-      throw Error("Archive root must contain bonk.mod.json.");
+      throw Error("Archive root must contain tonk.mod.json.");
     const manifest = validateManifest(
       JSON.parse(Buffer.from(files["bonk.mod.json"]).toString()),
     );
@@ -131,7 +135,7 @@ export class ModRepository {
         fs.mkdirSync(path.dirname(target), { recursive: true });
         fs.writeFileSync(target, bytes);
       }
-      fs.mkdirSync(path.join(staging, ".build"));
+      fs.mkdirSync(path.join(staging, ".build"), {recursive:true});
       const hostIsolation = options.clientOnly
         ? [
             {
@@ -243,7 +247,7 @@ export class ModRepository {
         const root = path.join(this.directory, "installed", id, version),
           manifest = validateManifest(
             JSON.parse(
-              fs.readFileSync(path.join(root, "bonk.mod.json"), "utf8"),
+              fs.readFileSync(path.join(root, fs.existsSync(path.join(root,"tonk.mod.json")) ? "tonk.mod.json" : "bonk.mod.json"), "utf8"),
             ),
           ),
           metadata = JSON.parse(
@@ -368,7 +372,7 @@ export class ModRepository {
   pack(source: string, destination: string): void {
     const root = path.resolve(source),
       manifest = validateManifest(
-        JSON.parse(fs.readFileSync(path.join(root, "bonk.mod.json"), "utf8")),
+        JSON.parse(fs.readFileSync(path.join(root, fs.existsSync(path.join(root,"tonk.mod.json")) ? "tonk.mod.json" : "bonk.mod.json"), "utf8")),
       ),
       files: Record<string, Uint8Array> = {};
     const walk = (folder: string) => {

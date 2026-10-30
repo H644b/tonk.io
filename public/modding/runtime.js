@@ -1,5 +1,159 @@
 "use strict";
 (() => {
+  // shared/bot-ai.ts
+  var surfaces = /* @__PURE__ */ new WeakMap();
+  var point = (value) => ({ x: Number(value?.x ?? value?.p?.[0] ?? 0), y: Number(value?.y ?? value?.p?.[1] ?? 0) });
+  function arenaSurfaces(map, meters = false) {
+    if (!map || !map.physics) return [];
+    const cached = surfaces.get(map.physics);
+    if (cached) return cached;
+    const out = [], physics = map.physics, ppm = meters ? 1 : Number(physics.ppm) || 30;
+    for (const body of physics.bodies || []) {
+      if (body.s?.f_p === false) continue;
+      const a = Number(body.a) || 0, cos = Math.cos(a), sin = Math.sin(a);
+      for (const id of body.fx || []) {
+        const fixture = physics.fixtures?.[id], shape = physics.shapes?.[fixture?.sh];
+        if (!shape || fixture.np || fixture.ig) continue;
+        let points = [];
+        if (shape.type === "bx") {
+          const ca = Number(shape.a) || 0, c = Math.cos(ca), s = Math.sin(ca);
+          points = [[-shape.w / 2, -shape.h / 2], [shape.w / 2, -shape.h / 2], [shape.w / 2, shape.h / 2], [-shape.w / 2, shape.h / 2]].map(([x, y]) => [x * c - y * s + (shape.c?.[0] || 0), x * s + y * c + (shape.c?.[1] || 0)]);
+        } else if (shape.type === "ci") {
+          const [x, y] = shape.c || [0, 0];
+          points = [[x - shape.r, y - shape.r], [x + shape.r, y + shape.r]];
+        } else if (shape.type === "po") {
+          const ca = Number(shape.a) || 0, c = Math.cos(ca), s = Math.sin(ca);
+          points = (shape.v || []).map(([x, y]) => [shape.s * (x * c - y * s) + (shape.c?.[0] || 0), shape.s * (x * s + y * c) + (shape.c?.[1] || 0)]);
+        }
+        if (!points.length) continue;
+        points = points.map(([x, y]) => [(x * cos - y * sin + (body.p?.[0] || 0)) / ppm, (x * sin + y * cos + (body.p?.[1] || 0)) / ppm]);
+        out.push({ left: Math.min(...points.map((p) => p[0])), right: Math.max(...points.map((p) => p[0])), top: Math.min(...points.map((p) => p[1])), bottom: Math.max(...points.map((p) => p[1])), hazard: !!fixture.d });
+      }
+    }
+    surfaces.set(map.physics, out);
+    return out;
+  }
+  var settings = { easy: { reaction: 15, lead: 0.05, look: 1.2, noise: 2.5 }, normal: { reaction: 8, lead: 0.15, look: 2, noise: 0.8 }, hard: { reaction: 4, lead: 0.3, look: 3.2, noise: 0.2 }, expert: { reaction: 2, lead: 0.5, look: 4.5, noise: 0 } };
+  function botDecision(state, gameSettings, id, difficulty, frame) {
+    const input = { left: false, right: false, up: false, down: false, action: false, action2: false };
+    const me = state?.discs?.[id];
+    if (!me) return input;
+    const rule = settings[difficulty] || settings.normal, pos = point(me), mode = gameSettings?.mo || "b";
+    const enemies = (state.discs || []).map((disc, index) => ({ disc, index })).filter(({ disc, index }) => disc && index !== id && (!gameSettings?.tea || disc.team !== me.team));
+    enemies.sort((a, b) => Math.hypot(a.disc.x - pos.x, a.disc.y - pos.y) - Math.hypot(b.disc.x - pos.x, b.disc.y - pos.y));
+    const enemy = enemies[0]?.disc;
+    const terrain = state.physics ? arenaSurfaces(state, true) : arenaSurfaces(gameSettings?.map), safe = terrain.filter((s) => !s.hazard && s.right - s.left > 1);
+    let target = enemy ? { x: enemy.x + (enemy.xv || 0) * rule.lead, y: enemy.y + (enemy.yv || 0) * rule.lead } : { x: pos.x, y: pos.y };
+    if (mode === "f" && state.ball) {
+      const ball = point(state.ball), bounds = safe.length ? { left: Math.min(...safe.map((s) => s.left)), right: Math.max(...safe.map((s) => s.right)) } : { left: 0, right: 50 };
+      const attackRight = me.team === 3;
+      target = { x: ball.x + (attackRight ? -0.85 : 0.85), y: ball.y };
+      if (Math.abs(ball.x - pos.x) < 1.2) target.x = attackRight ? bounds.right : bounds.left;
+    }
+    const noise = Math.sin((Math.floor(frame / rule.reaction) + id * 37) * 1.618) * rule.noise;
+    target.x += noise;
+    const dx = target.x - pos.x, dy = target.y - pos.y, direction = Math.sign(dx) || 1;
+    input.left = dx < -0.35;
+    input.right = dx > 0.35;
+    const support = safe.filter((s) => pos.x >= s.left - 0.4 && pos.x <= s.right + 0.4 && s.top >= pos.y - 0.5 && s.top <= pos.y + 3).sort((a, b) => a.top - b.top)[0];
+    const ahead = pos.x + direction * rule.look + Number(me.xv || 0) * 0.15;
+    const landing = safe.filter((s) => ahead >= s.left && ahead <= s.right && s.top >= pos.y - 5 && s.top <= pos.y + 7).sort((a, b) => Math.abs(a.top - pos.y) - Math.abs(b.top - pos.y))[0];
+    const danger = terrain.some((s) => s.hazard && ahead > s.left - 0.6 && ahead < s.right + 0.6 && pos.y > s.top - 1.8 && pos.y < s.bottom + 0.8);
+    const gap = !!support && !landing;
+    const wall = safe.some((s) => ahead > s.left && ahead < s.right && pos.y > s.top + 0.3 && pos.y < s.bottom - 0.3);
+    input.up = dy < -1 || gap || wall || danger || Number(me.yv) > 5;
+    if ((gap || danger) && support && Math.abs(dx) > rule.look) {
+      const reachable = safe.filter((s) => Math.abs((s.left + s.right) / 2 - pos.x) < 12 && s.top > pos.y - 7 && s.top < pos.y + 5 && Math.sign((s.left + s.right) / 2 - pos.x) === direction);
+      if (!reachable.length) {
+        const center = (support.left + support.right) / 2;
+        input.left = pos.x > center;
+        input.right = pos.x < center;
+      }
+    }
+    const distance = enemy ? Math.hypot(enemy.x - pos.x, enemy.y - pos.y) : Infinity;
+    input.action = distance < 2.5 && (!input.up || pos.y < enemy.y - 1);
+    if (["ar", "ard"].includes(mode)) {
+      input.up = dy < -0.6 || input.up;
+      input.down = dy > 0.6 && !gap && !danger;
+      input.action2 = !!enemy && (difficulty !== "easy" || frame % 30 < 10);
+      if (difficulty === "hard" || difficulty === "expert") for (const projectile of state.projectiles || []) {
+        if (!projectile) continue;
+        const p = point(projectile);
+        if (Math.hypot(p.x - pos.x, p.y - pos.y) < 4) {
+          input.up = true;
+          input.left = (projectile.xv || 0) > 0;
+          input.right = !input.left;
+        }
+      }
+    } else if (mode === "sp") input.action2 = (gap || dy < -2 || Number(me.yv) > 4) && Math.floor(frame / 18) % 3 !== 2;
+    else if (mode === "v") {
+      const angle = Math.atan2(dx, -dy), delta = Math.atan2(Math.sin(angle - (me.a || 0)), Math.cos(angle - (me.a || 0)));
+      input.left = delta < -0.15;
+      input.right = delta > 0.15;
+      input.up = dy < 1 || Math.abs(dx) > 2;
+      input.action2 = distance < 15;
+    }
+    if (difficulty === "easy" && Math.floor(frame / 90) % 4 === 0) {
+      input.action = false;
+      input.action2 = false;
+    }
+    return input;
+  }
+  function botReactionFrames(difficulty) {
+    return settings[difficulty]?.reaction || 8;
+  }
+
+  // client/bots/runtime.ts
+  var NativeBots = class {
+    world;
+    timer;
+    lastFrame = -1;
+    steps = /* @__PURE__ */ new WeakMap();
+    observe(type, context) {
+      if (type === "worldReady") {
+        this.world = context;
+        this.lastFrame = -1;
+        clearInterval(this.timer);
+        this.timer = setInterval(() => this.think(), 40);
+        return;
+      }
+      if (type === "beforeStep") {
+        this.steps.delete(context.simulation);
+        const previous = context.state?.__tonkBots, update = context.admin?.tonkBots;
+        if (!previous && !update) return;
+        const controls = { ...previous?.controls || {}, ...update || {} };
+        for (const [sid, raw] of Object.entries(controls)) {
+          const id = Number(sid);
+          if (!Number.isInteger(id) || id < 0 || id > 63 || !raw || typeof raw !== "object") continue;
+          const input = {};
+          for (const key of ["left", "right", "up", "down", "action", "action2"]) input[key] = raw[key] === true;
+          context.inputs[id] = input;
+        }
+        this.steps.set(context.simulation, { controls });
+      }
+      if (type === "afterStep") {
+        const metadata = this.steps.get(context.simulation);
+        if (metadata) context.state.__tonkBots = metadata;
+      }
+    }
+    think() {
+      const native = window.manifold, bots = native?.bots || [];
+      if (!this.world || !native?.socket?.connected || !native.playing || native.localId !== native.hostId || !bots.length) return;
+      const state = this.world.getState(), frame = this.world.getFrame();
+      if (!state?.discs || frame === this.lastFrame) return;
+      const controls = {};
+      for (const bot of bots) {
+        const difficulty = bot.difficulty;
+        if (frame % botReactionFrames(difficulty) > 1 && this.lastFrame >= 0) continue;
+        controls[bot.id] = botDecision(state, this.world.getSettings(), bot.id, difficulty, frame);
+      }
+      if (Object.keys(controls).length) {
+        this.world.submitAdmin({ tonkBots: controls }, frame + 4);
+        this.lastFrame = frame;
+      }
+    }
+  };
+
   // shared/modkit.ts
   function assertJson(value, depth = 0) {
     if (depth > 50) throw Error("Mod state is nested too deeply.");
@@ -245,9 +399,9 @@
       throw Error(
         "Entity polygons need 3\u20138 convex vertices; use multiple fixtures for compound shapes."
       );
-    const vertices = points.map((point) => ({
-      x: finite(Array.isArray(point) ? point[0] : point?.x, 0, "polygon x"),
-      y: finite(Array.isArray(point) ? point[1] : point?.y, 0, "polygon y")
+    const vertices = points.map((point2) => ({
+      x: finite(Array.isArray(point2) ? point2[0] : point2?.x, 0, "polygon x"),
+      y: finite(Array.isArray(point2) ? point2[1] : point2?.y, 0, "polygon y")
     }));
     let direction = 0, area = 0;
     for (let index = 0; index < vertices.length; index++) {
@@ -282,7 +436,7 @@
     else if (kind === "polygon")
       shape.SetAsArray(
         polygonPoints(descriptor.points).map(
-          (point) => new B.Common.Math.b2Vec2(point.x, point.y)
+          (point2) => new B.Common.Math.b2Vec2(point2.x, point2.y)
         )
       );
     else throw Error(`Unknown entity body shape: ${kind}`);
@@ -546,7 +700,7 @@
     else if (shape === "polygon" && Array.isArray(descriptor.points))
       graphic.drawPolygon(
         descriptor.points.flatMap(
-          (point) => Array.isArray(point) ? point : [point.x, point.y]
+          (point2) => Array.isArray(point2) ? point2 : [point2.x, point2.y]
         )
       );
     else
@@ -638,6 +792,7 @@
   ].map((byte) => byte.toString(16).padStart(2, "0")).join("");
   var ClientModRuntime = class {
     apiVersion = 2;
+    bots = new NativeBots();
     registries = new Registries();
     events = new EventBus(
       (error, owner, event) => this.report(
@@ -675,7 +830,7 @@
       this.events.emit("engineReady", native);
     }
     report(message) {
-      console.error("[Bonk Mods]", message);
+      console.error("[Tonk Mods]", message);
       parent.postMessage({ type: "bonk-mod-notice", message }, location.origin);
     }
     progress(message, done = false) {
@@ -1084,6 +1239,7 @@
       parent.postMessage({ type: "bonk-modpack-left" }, location.origin);
     }
     nativeEvent(type, context) {
+      this.bots.observe(type, context);
       if (type === "worldReady") {
         this.nativeWorld = context;
         this.events.emit(type, context);
@@ -1190,5 +1346,6 @@
     }
   };
   window.BonkMods = new ClientModRuntime();
+  window.TonkMods = window.BonkMods;
 })();
 //# sourceMappingURL=runtime.js.map

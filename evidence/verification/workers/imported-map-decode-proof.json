@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-30T06:34:14.628Z",
+  "total": 1482,
+  "valid": 1482,
+  "fixtures": 92143,
+  "errors": [],
+  "scope": "All imported payloads decoded by the pinned native map codec; not an assertion that every map has been played."
+}

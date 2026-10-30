@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { cloudDatabase, closeDatabase, type Database } from './database.ts';
+import { cloudDatabase, closeDatabase, withTransaction, type Database } from './database.ts';
 import { createHash, randomBytes, randomUUID, scrypt, timingSafeEqual } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { mkdirSync } from 'node:fs';
@@ -52,9 +52,9 @@ const profile = (row: Row): Profile => ({ id: row.id, username: row.username, cr
 /** Independent local account/map storage. This is not a connection to Bonk.io accounts. */
 export class ServiceStore {
   readonly db: Database;
-  constructor(filename = resolve(process.cwd(), 'data/bonk.sqlite')) {
+  constructor(filename = resolve(process.cwd(), 'data/bonk.sqlite'), database?: Database) {
     if (filename !== ':memory:') mkdirSync(dirname(resolve(filename)), { recursive: true });
-    const remote = filename !== ':memory:' ? cloudDatabase() : undefined;
+    const remote = database ?? (filename !== ':memory:' ? cloudDatabase() : undefined);
     this.db = remote || new DatabaseSync(filename);
     if (!remote) this.db.exec('PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL;');
     this.db.exec(`
@@ -157,6 +157,27 @@ export class ServiceStore {
         moderator_id TEXT NOT NULL REFERENCES users(id), hidden INTEGER NOT NULL,
         reason TEXT NOT NULL, updated_at INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS community_maps (
+        id TEXT PRIMARY KEY, dbv INTEGER NOT NULL, source_id TEXT NOT NULL, name TEXT NOT NULL,
+        authorname TEXT NOT NULL, leveldata TEXT NOT NULL, category TEXT NOT NULL DEFAULT 'mapStrings',
+        vu INTEGER NOT NULL DEFAULT 0, vd INTEGER NOT NULL DEFAULT 0,
+        published_at TEXT NOT NULL DEFAULT '', source_url TEXT NOT NULL, updated_at INTEGER NOT NULL,
+        UNIQUE(dbv, source_id)
+      );
+      CREATE INDEX IF NOT EXISTS community_maps_popular ON community_maps(vu DESC, vd);
+      CREATE TABLE IF NOT EXISTS map_moderation (
+        map_key TEXT PRIMARY KEY, hidden INTEGER NOT NULL DEFAULT 0, reason TEXT NOT NULL DEFAULT '',
+        moderator_id TEXT NOT NULL REFERENCES users(id), updated_at INTEGER NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS account_bans (
+        user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE, reason TEXT NOT NULL,
+        expires_at INTEGER, moderator_id TEXT NOT NULL REFERENCES users(id), created_at INTEGER NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS moderation_audit (
+        id TEXT PRIMARY KEY, actor_id TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL,
+        details TEXT NOT NULL, created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS moderation_audit_date ON moderation_audit(created_at DESC);
     `);
     // Keep local protocol IDs outside the bundled upstream map namespace.
     const sequence = this.db.prepare("SELECT seq FROM sqlite_sequence WHERE name = 'native_ids'").get() as Row | undefined;
@@ -169,6 +190,8 @@ export class ServiceStore {
     return row ? profile(row) : null;
   }
   async register(input: { username?: unknown; password?: unknown }): Promise<Profile> {
+    const registration = this.db.prepare("SELECT value FROM server_settings WHERE key='registrationOpen'").get() as Row | undefined;
+    if (registration && JSON.parse(registration.value) === false) throw new ServiceError(403, 'registration_closed', 'Registration is currently closed.');
     const username = text(input.username, 'Username', 3, 20);
     if (!/^[a-zA-Z0-9_-]+$/.test(username)) throw new ServiceError(400, 'invalid_username', 'Username may contain letters, numbers, underscores, and hyphens.');
     const secret = password(input.password);
@@ -194,6 +217,8 @@ export class ServiceStore {
     const actual = await derive(secret, row?.password_salt ?? 'no-such-account');
     const expected = row ? Buffer.from(row.password_hash, 'hex') : Buffer.alloc(32);
     if (!row || !timingSafeEqual(actual, expected)) throw new ServiceError(401, 'invalid_credentials', 'Incorrect username or password.');
+    const ban = this.db.prepare('SELECT reason FROM account_bans WHERE user_id=? AND (expires_at IS NULL OR expires_at>?)').get(row.id, Date.now()) as Row | undefined;
+    if(ban) throw new ServiceError(403,'account_banned','This account is suspended. '+ban.reason);
     return profile(row);
   }
   createSession(userId: string): string {
@@ -205,7 +230,7 @@ export class ServiceStore {
   }
   getSession(token?: string | null): Profile | null {
     if (!token || token.length > 128) return null;
-    const row = this.db.prepare('SELECT u.* FROM users u JOIN sessions s ON s.user_id = u.id WHERE s.token_hash = ? AND s.expires_at > ?')
+    const row = this.db.prepare("SELECT u.* FROM users u JOIN sessions s ON s.user_id = u.id WHERE s.token_hash = ? AND s.expires_at > ? AND NOT EXISTS(SELECT 1 FROM account_bans b WHERE b.user_id=u.id AND (b.expires_at IS NULL OR b.expires_at > CAST(strftime('%s','now') AS INTEGER)*1000))")
       .get(hashToken(token), Date.now()) as Row | undefined;
     return row ? profile(row) : null;
   }
@@ -244,14 +269,12 @@ export class ServiceStore {
     else throw new ServiceError(400, 'invalid_role', 'Role must be owner or curator.');
   }
   awardRoundXP(userId: string, roundKey: string, createdAt = Date.now()): { xp: number; awarded: boolean } {
-    this.db.exec('BEGIN IMMEDIATE');
-    try {
+    return withTransaction(this.db, () => {
       const inserted = this.db.prepare('INSERT OR IGNORE INTO xp_awards(user_id, round_key, amount, created_at) VALUES (?, ?, 100, ?)').run(userId, roundKey, createdAt);
       const awarded = Number(inserted.changes) === 1, xp = Math.max(0, Number(this.getSetting(userId, 'xp', 0)) || 0) + (awarded ? 100 : 0);
       if (awarded) this.setSetting(userId, 'xp', xp);
-      this.db.exec('COMMIT');
       return { xp, awarded };
-    } catch (error) { this.db.exec('ROLLBACK'); throw error; }
+    });
   }
   setMapMetadata(mapId: string, ownerId: string, input: { mode?: unknown; remix?: unknown; spawns?: unknown }) {
     const map = this.getMap(mapId, ownerId);
@@ -308,12 +331,10 @@ export class ServiceStore {
     await this.login({ username: account.username, password: oldPassword });
     const secret = password(newPassword), salt = randomBytes(16).toString('hex');
     const hash = (await derive(secret, salt)).toString('hex');
-    this.db.exec('BEGIN');
-    try {
+    withTransaction(this.db, () => {
       this.db.prepare('UPDATE users SET password_salt = ?, password_hash = ? WHERE id = ?').run(salt, hash, userId);
       this.db.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?').run(userId, preserveToken ? hashToken(preserveToken) : '');
-      this.db.exec('COMMIT');
-    } catch (error) { this.db.exec('ROLLBACK'); throw error; }
+    });
   }
   private mapRow(id: string, viewerId?: string): Row {
     const row = this.db.prepare(`SELECT m.*, u.username AS owner_name,
@@ -323,6 +344,7 @@ export class ServiceStore {
       EXISTS(SELECT 1 FROM map_favorites WHERE map_id = m.id AND user_id = ?) AS favorite
       FROM maps m JOIN users u ON u.id = m.owner_id WHERE m.id = ?`)
       .get(viewerId ?? '', viewerId ?? '', id) as Row | undefined;
+    if ((this.db.prepare('SELECT hidden FROM map_moderation WHERE map_key=?').get('local:'+id) as Row | undefined)?.hidden && (!viewerId || !this.role(viewerId))) throw new ServiceError(404,'map_not_found','Map not found.');
     if (!row || (row.visibility === 'private' && row.owner_id !== viewerId)) throw new ServiceError(404, 'map_not_found', 'Map not found.');
     return row;
   }
@@ -339,7 +361,7 @@ export class ServiceStore {
     const query = (options.query ?? '').slice(0, 100);
     const limit = Math.max(1, Math.min(50, Number.isFinite(options.limit) ? Math.trunc(options.limit!) : 20));
     const offset = Math.max(0, Math.min(100_000, Number.isFinite(options.offset) ? Math.trunc(options.offset!) : 0));
-    const criteria = `WHERE (m.visibility = 'public' OR m.owner_id = ?) AND (? = '' OR m.owner_id = ?)
+    const criteria = `WHERE (m.visibility = 'public' OR m.owner_id = ?) AND (? = '' OR m.owner_id = ?) AND NOT EXISTS(SELECT 1 FROM map_moderation mm WHERE mm.map_key='local:'||m.id AND mm.hidden=1)
       AND (? = '' OR (? = 1 AND instr(lower(m.name), lower(?)) > 0) OR (? = 1 AND instr(lower(u.username), lower(?)) > 0))
       AND (? = 0 OR EXISTS(SELECT 1 FROM map_favorites WHERE map_id = m.id AND user_id = ?))
       AND (? = 0 OR json_type(m.data) = 'text')`;
@@ -490,12 +512,10 @@ export class ServiceStore {
   }
   deleteSkin(id: string, userId: string) {
     this.ownedSkin(id, userId);
-    this.db.exec('BEGIN');
-    try {
+    withTransaction(this.db, () => {
       this.db.prepare('UPDATE users SET selected_skin_id = NULL WHERE id = ? AND selected_skin_id = ?').run(userId, id);
       this.db.prepare('DELETE FROM skins WHERE id = ? AND owner_id = ?').run(id, userId);
-      this.db.exec('COMMIT');
-    } catch (error) { this.db.exec('ROLLBACK'); throw error; }
+    });
   }
   saveReplay(input: { replaydata?: unknown; version?: unknown; mode?: unknown; mapid?: unknown }): number {
     if (typeof input.replaydata !== 'string' || !input.replaydata.length || Buffer.byteLength(input.replaydata) > 2 * 1024 * 1024) {
@@ -546,5 +566,6 @@ export class ServiceStore {
 }
 
 // Node's test workers must never open or migrate the running application's database.
-export const serviceStore = new ServiceStore(process.env.NODE_TEST_CONTEXT ? ':memory:' : process.env.BONK_DATA_PATH || undefined);
+let defaultStore: ServiceStore | undefined;
+export const serviceStore = new Proxy({} as ServiceStore, { get(_target, key) { defaultStore ??= new ServiceStore(process.env.NODE_TEST_CONTEXT ? ':memory:' : process.env.BONK_DATA_PATH || undefined); const value = (defaultStore as any)[key]; return typeof value === 'function' ? value.bind(defaultStore) : value; } });
 export const sessionLifetime = SESSION_LIFETIME;

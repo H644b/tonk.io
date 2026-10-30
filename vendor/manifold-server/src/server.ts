@@ -16,6 +16,7 @@ import moment from 'moment';
 /** Optional embedding hooks. The upstream standalone entry remains supported. */
 export interface ManifoldServerOptions {
   httpServer?: http.Server | https.Server;
+  socketServer?: socketIO.Server;
   expressApp?: express.Application;
   socketPath?: string;
   metadataPath?: string | false;
@@ -51,6 +52,7 @@ export default class ManifoldServer {
   private banListPath?: string;
   private pingTimer?: ReturnType<typeof setInterval>;
 
+  public connectSocket!: (socket: socketIO.Socket) => void;
   public playerInfo: Player[] = [];
   public playerSockets: socketIO.Socket[] = [];
   public ratelimits: Record<string, Record<string, number>> = {};
@@ -133,7 +135,7 @@ export default class ManifoldServer {
     });
 
     // init socket.io server and register socket connection events
-    this.io = new socketIO.Server(this.server, {
+    this.io = options.socketServer ?? new socketIO.Server(this.server, {
       allowEIO3: true,
       path: options.socketPath ?? '/socket.io',
       maxHttpBufferSize: 2 * 1024 * 1024,
@@ -145,7 +147,7 @@ export default class ManifoldServer {
       transports: ['websocket', 'polling'],
     });
 
-    this.io.on('connection', (socket) => {
+    this.connectSocket = (socket: socketIO.Socket) => {
       socket.on('1', (data) => {
         if (data && data.id === socket.data.pingProbe) socket.data.ping = Math.max(0, Math.min(10000, Date.now() - socket.data.pingSentAt));
       });
@@ -235,12 +237,12 @@ export default class ManifoldServer {
         }
 
         // min level check
-        if (this.config.restrictions.levels.minLevel > 0 && playerData.guest) {
+        if (!socket.data.bot && this.config.restrictions.levels.minLevel > 0 && playerData.guest) {
           socket.emit(OUT.ERROR_MESSAGE, 'guests_not_allowed');
           return;
         }
 
-        if (playerData.level < this.config.restrictions.levels.minLevel) {
+        if (!socket.data.bot && playerData.level < this.config.restrictions.levels.minLevel) {
           socket.emit(OUT.ERROR_MESSAGE, 'players_xp_too_low');
           return;
         }
@@ -333,7 +335,8 @@ export default class ManifoldServer {
           socket.emit(OUT.HOST_INFORM_IN_LOBBY, this.gameSettings);
         }
       });
-    });
+    };
+    this.io.on('connection', this.connectSocket);
 
     this.pingTimer = setInterval(() => {
       for (const socket of this.playerSockets) if (socket?.connected) this.sendPing(socket);
@@ -537,7 +540,7 @@ export default class ManifoldServer {
     );
 
     if (this.config.autoAssignHost) {
-      const newHostId = this.playerSockets.findIndex((i) => i && this.hostId != i.data.bonkId);
+      const newHostId = this.playerSockets.findIndex((i) => i && !i.data.bot && this.hostId != i.data.bonkId);
 
       if (newHostId != -1) {
         this.transferHost(newHostId);
@@ -765,7 +768,7 @@ export default class ManifoldServer {
       if (this.processRatelimit(socket, 'transferringHost')) return;
       if (!this.assertPlayerIsHost(socket.data.bonkId)) return;
 
-      if (!this.playerInfo[data.id]) return;
+      if (!this.playerInfo[data.id] || this.playerSockets[data.id]?.data.bot) return;
       const oldHostId = this.hostId;
 
       // change host id
@@ -868,7 +871,7 @@ export default class ManifoldServer {
       const tickCount = Math.round((Date.now() - this.gameStartTime) / (1000 / 30));
 
       if (this.config.autoAssignHost && this.assertPlayerIsHost(socket.data.bonkId, false)) {
-        const newHostId = this.playerSockets.findIndex((i) => i && this.hostId != i.data.bonkId);
+        const newHostId = this.playerSockets.findIndex((i) => i && !i.data.bot && this.hostId != i.data.bonkId);
 
         // log disconnect message
         if (newHostId == -1) {

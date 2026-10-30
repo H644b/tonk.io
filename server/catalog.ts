@@ -1,3 +1,4 @@
+import { mapIndex, importedMap } from './map-index.ts';
 import { readFileSync } from 'node:fs';
 import express, { type Express, type Request, type Response } from 'express';
 import { ServiceError, serviceStore, type ServiceStore } from './store.js';
@@ -11,12 +12,14 @@ export const nativeCatalog: CatalogMap[] = JSON.parse(readFileSync(new URL('../e
 export const sourceVersion = (map: CatalogMap): 1 | 2 => map.sourceDbv ?? map.dbv;
 export const sourceInfo = (map: CatalogMap) => ({ kind: 'bundled-original-client', originalId: map.id, dbv: sourceVersion(map),
   sourceDbv: sourceVersion(map), encodedDbv: map.dbv, category: map.category, author: map.authorname, url: 'https://bonk.io/' });
-export function getCatalogMap(sourceDbv: unknown, sourceId: unknown, converted = true): CatalogMap | undefined {
-  return (converted ? nativeCatalog : builtinCatalog).find(map => sourceVersion(map) === Number(sourceDbv) && map.id === String(sourceId));
+export function getCatalogMap(sourceDbv: unknown, sourceId: unknown, converted = true, store?: ServiceStore): CatalogMap | undefined {
+  if (store && (store.db.prepare('SELECT hidden FROM map_moderation WHERE map_key=?').get(`${Number(sourceDbv)}:${String(sourceId)}`) as any)?.hidden) return;
+  return (store ? importedMap(store,sourceDbv,sourceId) : undefined) ?? (converted ? nativeCatalog : builtinCatalog).find(map => sourceVersion(map) === Number(sourceDbv) && map.id === String(sourceId));
 }
 /** Native packets omit the source database version. Resolve only unambiguous bundled IDs. */
-export function findNativeCatalogMap(sourceId: unknown): CatalogMap | undefined {
-  const maps = nativeCatalog.filter(map => map.id === String(sourceId));
+export function findNativeCatalogMap(sourceId: unknown, store?: ServiceStore): CatalogMap | undefined {
+  const imported = store && (importedMap(store, 2, sourceId) ?? importedMap(store, 1, sourceId)); if(imported) return imported;
+  const maps = nativeCatalog.filter(map => map.id === String(sourceId) && !(store && (store.db.prepare('SELECT hidden FROM map_moderation WHERE map_key=?').get(`${sourceVersion(map)}:${map.id}`) as any)?.hidden));
   return maps.length && maps.every(map => sourceVersion(map) === sourceVersion(maps[0])) ? maps[0] : undefined;
 }
 export function nativeCatalogRow(map: CatalogMap, store: ServiceStore, viewerId?: string) {
@@ -26,7 +29,7 @@ export function nativeCatalogRow(map: CatalogMap, store: ServiceStore, viewerId?
 }
 export function nativeCatalogFavorites(store: ServiceStore, userId: string) {
   return store.listCatalogFavorites(userId).flatMap(entry => {
-    const map = getCatalogMap(entry.sourceDbv, entry.sourceId);
+    const map = getCatalogMap(entry.sourceDbv, entry.sourceId, true, store);
     return map ? [nativeCatalogRow(map, store, userId)] : [];
   });
 }
@@ -56,7 +59,7 @@ export function publicNativeMaps(store: ServiceStore, viewerId?: string): any[] 
 }
 export function curatedMapRows(store: ServiceStore, viewerId?: string): any[] {
   return store.listCurations().flatMap(curation => {
-    const source = getCatalogMap(curation.dbv, curation.mapid), id = store.entityId('map', curation.mapid);
+    const source = getCatalogMap(curation.dbv, curation.mapid, true, store), id = store.entityId('map', curation.mapid);
     let map: any;
     if (id) {
       try { const local = store.getMap(id); if (typeof local.data === 'string') map = localNativeRow(store, local); }
@@ -70,7 +73,7 @@ export function curatedMapRows(store: ServiceStore, viewerId?: string): any[] {
 export function curateNativeMap(store: ServiceStore, userId: string, data: any) {
   if (!data || typeof data !== 'object') throw new ServiceError(400, 'invalid_mapid', 'Invalid map.');
   if (![1, 2].includes(Number(data.dbv))) throw new ServiceError(400, 'invalid_dbv', 'Database version must be 1 or 2.');
-  const local = store.entityId('map', data.mapid), source = getCatalogMap(data.dbv, data.mapid) ?? (Number(data.dbv) === 2 ? findNativeCatalogMap(data.mapid) : undefined);
+  const local = store.entityId('map', data.mapid), source = getCatalogMap(data.dbv, data.mapid, true, store) ?? (Number(data.dbv) === 2 ? findNativeCatalogMap(data.mapid, store) : undefined);
   if (!local && !source) throw new ServiceError(404, 'invalid_mapid', 'Map not found.');
   return store.curateMap(userId, { ...data, dbv: local ? 2 : sourceVersion(source!),
     mode: data.mode ?? (local ? store.getMapMetadata(local).mode : source!.category === 'arrowMapStrings' ? 'ar' : source!.category === 'grappleMapStrings' ? 'sp' : 'b') });
@@ -117,6 +120,7 @@ function viewer(req: Request, store: ServiceStore) {
 }
 export function setupCatalogRoutes(app: Express, options: { store?: ServiceStore } = {}) {
   const store = options.store ?? serviceStore, api = express.Router();
+  mapIndex(store,nativeCatalog);
   api.use((req, res, next) => {
     res.set('Cache-Control', 'no-store');
     if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.headers.origin) {
@@ -126,6 +130,7 @@ export function setupCatalogRoutes(app: Express, options: { store?: ServiceStore
     next();
   });
   api.use(express.json({ limit: '32kb' }));
+  api.get('/search', (req,res) => { const account=viewer(req,store);res.set('Cache-Control','private,max-age=15').json(mapIndex(store,nativeCatalog).search({query:String(req.query.q||''),sort:String(req.query.sort||'best'),offset:Number(req.query.offset)||0,limit:Number(req.query.limit)||32,viewerId:account?.id,includeData:req.query.data==='1'})); });
   api.get('/maps', (req, res) => {
     const query = String(req.query.q ?? '').toLowerCase().slice(0, 100), account = viewer(req, store);
     const category = req.query.mode ? catalogForMode(String(req.query.mode))[0]?.category : null;
@@ -137,14 +142,14 @@ export function setupCatalogRoutes(app: Express, options: { store?: ServiceStore
       maps: maps.map(map => ({ ...map, ...store.getCatalogSocial(sourceVersion(map), map.id, account?.id), source: sourceInfo(map) })) });
   });
   api.get('/maps/:sourceDbv/:sourceId', (req, res) => {
-    const map = getCatalogMap(req.params.sourceDbv, req.params.sourceId);
+    const map = getCatalogMap(req.params.sourceDbv, req.params.sourceId, true, store);
     if (!map) throw new ServiceError(404, 'map_not_found', 'Source map not found.');
     res.json({ readOnly: true, map: nativeCatalogRow(map, store, viewer(req, store)?.id) });
   });
   const changeSocial = (kind: 'rating' | 'favorite') => (req: Request, res: Response) => {
     const account = viewer(req, store);
     if (!account) throw new ServiceError(401, 'authentication_required', 'Sign in to continue.');
-    const map = getCatalogMap(req.params.sourceDbv, req.params.sourceId);
+    const map = getCatalogMap(req.params.sourceDbv, req.params.sourceId, true, store);
     if (!map) throw new ServiceError(404, 'map_not_found', 'Source map not found.');
     if (kind === 'rating') store.rateCatalogMap(sourceVersion(map), map.id, account.id, req.body?.rating);
     else {
@@ -196,7 +201,8 @@ export function setupCatalogRoutes(app: Express, options: { store?: ServiceStore
     res.set('Cache-Control', 'no-store');
     const account = viewer(req, store);
     if (!/^(?:picks|cache3_\d+_(?:hot|ard|ar|sp)|cache_edits_\d+)\.txt$/.test(file)) return next();
-    const maps = file === 'picks.txt' ? curatedMapRows(store, account?.id) : hotMapRows(store, file, account?.id);
+    const category = /_(?:ar|ard)\.txt$/.test(file) ? 'arrowMapStrings' : /_sp\.txt$/.test(file) ? 'grappleMapStrings' : undefined;
+    const maps = file === 'picks.txt' ? curatedMapRows(store, account?.id) : /^cache_edits_/.test(file) ? hotMapRows(store,file,account?.id) : mapIndex(store,nativeCatalog).search({category,viewerId:account?.id,limit:200}).maps;
     res.type('text/plain').send(JSON.stringify({ r: 'success', maps, readOnly: true, source: 'local-server-and-bundled-original-client', ratingScope: 'local-server' }));
   });
   app.post('/compat/:endpoint', express.urlencoded({ extended: false, limit: '3mb' }), express.json({ limit: '3mb' }), (req, res, next) => {

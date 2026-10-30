@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import Libsql from "libsql";
 
 // Both drivers implement the synchronous statement API used by the game services.
-export type Database = Pick<DatabaseSync, "exec" | "prepare" | "close">;
+export type Database = Pick<DatabaseSync, "exec" | "prepare" | "close"> & { transactionSync?<T>(fn: () => T): T };
 let cloud: Database | undefined;
 export function cloudDatabase(): Database | undefined {
   const url = process.env.NODE_TEST_CONTEXT
@@ -33,4 +33,9 @@ export function closeDatabase(database: Database) {
 }
 export function closeCloudDatabase() {
   if (cloud) closeDatabase(cloud);
+}
+
+export function withTransaction<T>(db: Database, fn: () => T): T {
+ if(db.transactionSync)return db.transactionSync(fn);
+ db.exec("BEGIN IMMEDIATE");try{const value=fn();db.exec("COMMIT");return value;}catch(error){db.exec("ROLLBACK");throw error;}
 }

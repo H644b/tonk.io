@@ -1,3 +1,4 @@
+import { mapIndex } from './map-index.ts';
 import express, { type Express, type Request, type Response } from 'express';
 import { createHash, randomBytes } from 'node:crypto';
 import { ServiceError, serviceStore, type Profile, type ServiceStore, sessionLifetime } from './store.js';
@@ -188,7 +189,7 @@ export function setupCompatibility(app: Express, options: { store?: ServiceStore
           if (map.favorite === (body.action === 'f')) return res.json({ r: 'fail', e: map.favorite ? 'already_faved' : 'not_faved' });
           store.favoriteMap(id, account.id, body.action === 'f');
         } else {
-          const map = body.sourceDbv ? getCatalogMap(body.sourceDbv, body.mapid) : findNativeCatalogMap(body.mapid);
+          const map = body.sourceDbv ? getCatalogMap(body.sourceDbv, body.mapid, true, store) : findNativeCatalogMap(body.mapid,store);
           if (!map) throw new ServiceError(404, 'map_not_found', 'Map not found.');
           const social = store.getCatalogSocial(sourceVersion(map), map.id, account.id);
           if (social.favorite === (body.action === 'f')) return res.json({ r: 'fail', e: social.favorite ? 'already_faved' : 'not_faved' });
@@ -209,22 +210,8 @@ export function setupCompatibility(app: Express, options: { store?: ServiceStore
           const local = store.listFavoriteMapIds(user!.id).map(id => store.getMap(id, user!.id)).filter(map => typeof map.data === 'string').map(nativeLocalRow);
           all = [...local, ...nativeCatalogFavorites(store, user!.id)];
         } else {
-          const local: any[] = [];
-          for (let offset = 0; ; offset += 50) {
-            const batch = store.listMaps({ viewerId: user?.id, query: String(body.searchstring || ''), searchName: truthy(body.searchmapname),
-              searchAuthor: truthy(body.searchauthor), sort: body.searchsort === 'ctr' ? 'rating' : 'recent', limit: 50, offset, nativeOnly: true });
-            local.push(...batch.maps.map((entry: any) => nativeLocalRow(store.getMap(entry.id, user?.id))));
-            if (offset + batch.maps.length >= batch.total || !batch.maps.length) break;
-          }
-          const query = String(body.searchstring || '').toLowerCase().slice(0, 100), seen = new Set<string>();
-          const source = nativeCatalog.filter(map => {
-            const key = `${sourceVersion(map)}:${map.id}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return !query || (truthy(body.searchmapname) && map.name.toLowerCase().includes(query)) || (truthy(body.searchauthor) && map.authorname.toLowerCase().includes(query));
-          }).map(map => nativeCatalogRow(map, store, user?.id));
-          all = [...local, ...source];
-          if (body.searchsort === 'ctr') all.sort((a, b) => (b.vu - b.vd) - (a.vu - a.vd));
+          const result=mapIndex(store,nativeCatalog).search({query:String(body.searchstring||''),name:truthy(body.searchmapname),author:truthy(body.searchauthor),sort:body.searchsort==='ctr'?'best':'recent',offset:Number(body.startingfrom)||0,limit:pageSize,viewerId:user?.id});
+          return res.json({r:'success',...result,ratingScope:'local-server'});
         }
         const offset = Math.max(0, Math.min(100_000, Math.trunc(Number(body.startingfrom) || 0)));
         return res.json({ r: 'success', maps: all.slice(offset, offset + pageSize), more: offset + pageSize < all.length, ratingScope: 'local-server' });

@@ -1,131 +1,58 @@
-# Deployment
+# Tonk deployment
 
-Run one persistent Node 24+ process behind an HTTPS reverse proxy. Rooms, host tokens, live connections, and mod readiness live in memory: do not use multiple replicas or a serverless host. Persistence uses either a writable disk or the configured Turso/libSQL database. Restarting disconnects active rooms; accounts and saved content survive.
+Production runs on Cloudflare Workers with one SQLite-backed Durable Object for the native room server and Supabase Postgres for persistent game records. Static files are served by Workers Assets. The current entry point is `workers/index.ts`; Node and Docker remain available for development or alternate hosting.
 
-## Free hosting: Render + Turso
+## Cloudflare Workers + Supabase
 
-`render.yaml` defines one **Free** Node web service. Use a **Free** Turso/libSQL database for persistent accounts, sessions, maps, skins, replays, installed mod code/assets, enabled packs, and mod SDK storage. No paid Render disk is required. Mod data is stored in verified chunks and restored into the disposable filesystem on startup. Gameplay rooms remain in memory and close on restart.
+1. Install Node 24+ and run `npm ci`.
+2. Create a Supabase Free project. Apply `supabase/migrations/20261030054753_cloudflare_persistence.sql` using the Supabase CLI or SQL editor. Both tables must retain RLS, and only `service_role` may read records or execute `bonk_apply_changes`.
+3. Authenticate Wrangler, update `account_id` and the Worker name in `wrangler.jsonc`, and create a private JSON secrets file outside Git containing `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. The secret key is server-only. The game does not use Supabase Auth or expose its record store directly to browsers; existing game accounts and salted password hashes are retained.
+4. Run `npm run check`, `npm run check:workers`, `npm test`, and `npm run build:workers`.
+5. Deploy with `npx wrangler deploy --secrets-file /absolute/path/to/private-secrets.json`. The SQLite Durable Object migration is declared in `wrangler.jsonc`.
+6. Provision the owner before public registration. Existing deployments must migrate the account and `server_roles` records together. Verify HTTPS, login, native WebSockets, room cleanup, and mod downloads at the actual public URL.
 
-1. Create a Turso database on its Free plan and generate a database authentication token.
-2. Put the project in a Git repository accessible to Render. Create a Render Blueprint from the repository, or create a Node Web Service manually using the settings in `render.yaml`. Select **Free**.
-3. Set `BONK_DATABASE_URL` to the database's `libsql://…` URL and `BONK_DATABASE_AUTH_TOKEN` to its token in Render's secret environment settings. Keep them out of Git and the frontend.
-4. Deploy. Render supplies the HTTPS `onrender.com` URL and routes WebSockets to the Node process. A separate Caddy service or custom domain is unnecessary.
-5. Register the owner account before opening registration to other players. Check login cookies have `Secure`, create a two-client room, upload a pack, and perform a redeploy to verify persistence on the actual host.
+For development, put the same keys in ignored `.dev.vars`, build, and run `npm run dev:workers`. This connects to the configured Supabase database: use a separate project for isolated development. Stop the development Worker before importing records into a shared database.
 
-The build command includes development dependencies explicitly, builds the artifacts, then removes development dependencies. `HOST=0.0.0.0` and Render's assigned `PORT` expose the process to its router. The supplied proxy setting trusts loopback, link-local, and private proxy addresses; adapt it if the host's actual proxy path differs.
+### Persistence and recovery
 
-Render Free currently grants 750 instance hours/month and sleeps after 15 minutes without inbound HTTP or WebSocket traffic. Waking takes about a minute. Render may restart free instances, and monthly bandwidth/build quotas also apply. Turso currently includes 5 GB storage, 500 million row reads, and 10 million row writes/month on Free. These are provider quotas, not unlimited hosting promises. Confirm the current [Render Free limits](https://render.com/docs/free) and [Turso pricing](https://turso.tech/pricing?frequency=monthly) before enabling billing.
+Supabase is the canonical store. The Durable Object keeps an indexed SQLite query cache. Row triggers capture inserts, updates, deletes and cascades into an outbox; a Postgres function commits each batch with a revision check before an HTTP response completes. Only application tables are mirrored; runtime and emulator metadata are excluded. The secret key and password hashes never enter static assets.
 
-Vercel Functions now support WebSockets, but connections end at the function duration limit and new connections can reach different instances. This server's rooms require a single process. Cloudflare Workers/Durable Objects require a different runtime/transport and cannot directly run the current Node mod compiler and arbitrary Node server entrypoints. This release targets Render for the full multiplayer server; it does not claim a Vercel-only or Workers-only port. See [Vercel WebSockets](https://vercel.com/docs/functions/websockets) and [Workers Node support](https://developers.cloudflare.com/workers/runtime-apis/nodejs/).
+On a cold start, the object compares its revision with Supabase. It restores records when the cache is stale or an interrupted mutation remains. Conflicting writers fail and reload the canonical store. Use one production object and do not run two independently writable deployments against the same database. Stop active writers before operator imports. Back up `bonk_state` and all `bonk_records`, including managed mod files, together. Restore into separate storage before switching traffic.
 
-### Operator mods on Free
+Rooms and uploaded room packs are transient. A deployment disconnects games; accounts, maps, skins, replays, settings and operator-managed mod data remain. The final human leaving closes a room even when bots remain. WebSockets use native Engine.IO 3 or 4 framing; long polling is not supported on Workers.
 
-Render Free has no interactive shell. Install and enable trusted server packs from a workstation using the same database secrets, then use Render's restart/deploy action. The CLI writes their compiled code and assets to durable storage; the next server start restores them. Use a temporary empty cache directory, supply secrets through the shell/service environment, and run:
+### Mods
 
-```sh
-npm ci
-npm run build
-# BONK_DATABASE_URL and BONK_DATABASE_AUTH_TOKEN must be set in this process.
-BONK_MODS_DIR=/tmp/bonk-mod-admin npm run mods -- install ./pack.bonkmod
-BONK_MODS_DIR=/tmp/bonk-mod-admin npm run mods -- enable pack-id
-```
+Room hosts upload `.tonkmod` or ZIP archives. The browser bundles JS/TS and relative imports with esbuild WebAssembly, then the Worker validates and relays the files. Other players approve the content before loading; downloaded code and assets are checked against SHA-256 hashes. Changed content requires approval again. Workers currently limits each room pack to **8 MiB compressed and expanded**, with 2,048 files. Node hosting defaults to 64 MiB. Keep original archives; room uploads expire when the room closes.
 
-Room-host uploads remain available in the browser and do not need a service restart. These uploads belong to the room and expire when it closes; retain the original archive for reuse. Server mods should use `api.storage` for durable data. Arbitrary writes outside managed storage remain subject to the host's ephemeral filesystem. Keep one game instance and avoid changing packs while a deployment is in progress.
+Trusted operator server entrypoints are compiled into the Worker at deployment. Install and enable the pack with the mod CLI, then run `npm run build:workers` and redeploy. `scripts/build-workers.mjs` includes enabled server modules from `mods/installed`. Server packs must use APIs supported by Workers; arbitrary native Node addons and runtime loading of new server JavaScript are unavailable. Browser room uploads remain client-only. The mod API, native engine access, entities, registries, UI, custom assets, rollback state, and replay hooks remain available. Legacy `.bonkmod`, `bonk.mod.json`, and `BonkMods` aliases preserve existing packs.
 
-Cloud mode fails if its database is unavailable; it does not silently switch to an empty local database. Moving an existing disk deployment to cloud storage does not automatically migrate its database: export/import the SQLite data through the database provider and preserve its mod repository before changing configuration. Test with separate data first.
+### Free plan limits
 
-### Cold-start verification
+The configuration uses SQLite Durable Objects, which are available on Workers Free, and stays below the Free Worker compressed bundle limit. Provider limits still apply to requests, active object duration, storage, and database egress. In particular, this compatibility transport keeps an object active during connected games; it does not claim hibernation. Supabase Free currently includes a 500 MB database and 5 GB database egress. Verify current limits before changing plan or billing settings:
 
-The release was checked on Node 24 against an actual libSQL server, including a complete app-filesystem wipe and SIGKILL. Accounts, sessions, maps, installed compiled mod code, custom assets, enabled packs, and mod SDK data survive. This is separate from verifying Render/Turso account settings, live TLS, region latency, quotas, or WAN behavior.
+- [Cloudflare Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/)
+- [Cloudflare Durable Objects limits](https://developers.cloudflare.com/durable-objects/platform/limits/)
+- [Supabase billing](https://supabase.com/docs/guides/platform/billing-on-supabase)
 
-To reproduce with the official `sqld` binary:
+## Maps and moderation
 
-```sh
-npm run verify:cloud -- /absolute/path/to/sqld
-```
+`scripts/import-community-maps.mjs --apply` imports available public community feeds, retains creator/source metadata, converts legacy maps with the native codec, validates geometry, and writes the configured Supabase project. It replaces the imported community catalog, not player-created maps. Run it while the Worker is stopped or before deployment, then deploy a new version to reload the cache. Feed availability and popularity change; this is a bounded imported catalog rather than access to every historical original map.
 
-The verifier creates a disposable libSQL database and application caches; it never uses a production database or your configured credentials.
+Search uses a metadata index, trigram intersections and bounded result caching. Geometry is loaded only for the selected result page, and social aggregates are batched. Reproduce the public comparison with `node scripts/benchmark-map-search.mjs PREVIOUS_ORIGIN CURRENT_ORIGIN`; the report records page size, bytes, timing and scope under ignored `.deployment/`.
 
-## Build and verify
+H644b has the owner role in the migrated database. Owners see Admin in the native navigation and Workbench. It supports room closure, kicks, account suspension/unbanning, session revocation, curator assignment, map removal/restoration, replay reports, registration controls, maintenance controls and an audit trail. Every endpoint checks the server session and role; hiding a UI control is not authorization. Owner accounts are protected from accidental demotion or suspension.
 
-```sh
-npm ci
-npm run check
-npm test
-npm run verify:release
-```
+## Verification
 
-`verify:release` creates a temporary release containing only built code, public assets, catalog data, notices, and production dependencies. It installs and compiles the example pack through the bundled CLI, starts the server, joins through an EIO3 WebSocket, then shuts down and removes the temporary release. It does not publish anything.
+`node scripts/verify-live.mjs https://YOUR_WORKER --owner-ready` creates disposable QA accounts, verifies cookie flags and private map persistence, connects two native WebSocket peers, uploads a room pack, verifies code/assets and readiness, transfers hosting, and checks room/archive cleanup. Its private state file contains QA credentials; never commit it. After a redeploy, run the same command with `--resume` to verify account/map recovery. Real browser gameplay and consent require a separate browser pass.
 
-## Docker
+## Node and Docker
 
-The multi-stage Dockerfile builds the client, server, and operator CLI, installs production dependencies, and runs as the unprivileged `node` user. The image does not contain existing accounts, installed packs, development evidence, or credentials.
+`npm run build && npm start` runs the same game application with Node's native Socket.IO transport and a SQLite database at `data/bonk.sqlite`. Preserve both the database and managed `mods` directory. `BONK_DATA_PATH`, `BONK_MODS_DIR`, `HOST`, `PORT` and `TRUST_PROXY` configure this alternate host. The historical `BONK_DATABASE_URL` and `BONK_DATABASE_AUTH_TOKEN` still support libSQL as a compatibility option; production Workers does not use them.
 
-```sh
-cp .env.example .env
-# Set proxy addresses and curator usernames in .env.
-docker compose build
-docker compose up -d
-docker compose ps
-curl --fail http://127.0.0.1:3210/api/health
-```
+The Dockerfile and Compose file remain available for Node hosting. Keep the application port behind HTTPS and restrict proxy trust to actual reverse proxies. Retain third-party notices and original asset provenance when distributing the game.
 
-Compose publishes the game port on loopback only. Named volumes `game-data` and `game-mods` retain the database and installed mod files. Keep these volumes across updates. Do not run `docker compose down -v` when retaining data.
+## Legacy address cutover
 
-## HTTPS
-
-Point the domain's DNS at the host and allow inbound ports 80 and 443. Run Caddy on that host with `deploy/Caddyfile`; set `BONK_DOMAIN` in **Caddy's process environment** to the actual hostname. Configure the service manager to retain that variable on restart.
-
-```sh
-BONK_DOMAIN=game.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile
-BONK_DOMAIN=game.example.com caddy run --config deploy/Caddyfile --adapter caddyfile
-```
-
-Caddy handles HTTPS and WebSocket forwarding. Keep the upstream Host unchanged. The sample `.env` trusts loopback and private network proxy addresses because Docker's published port may translate the proxy source address. This assumes the app port remains loopback-only and the Docker network is controlled. For another topology, restrict `TRUST_PROXY` to the actual proxy IPs/subnets. Leave it empty when running directly. Do not use unrestricted trust: the setting controls client IPs, rate limiting, and secure session cookies. See the [Express proxy guide](https://expressjs.com/en/guide/behind-proxies/) and [Caddy proxy reference](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy).
-
-## Bare Node
-
-```sh
-npm ci
-npm run build
-npm prune --omit=dev
-NODE_ENV=production HOST=127.0.0.1 PORT=3210 TRUST_PROXY=loopback npm start
-```
-
-Run from the project root. A service manager should restart failures and send SIGTERM on shutdown with at least 15 seconds before forced termination. The server disconnects rooms, runs mod cleanup, and closes SQLite on SIGTERM/SIGINT. `.env` is a Compose input; bare Node does not load it automatically. Supply variables through the service manager or shell.
-
-| Variable                   | Default            | Purpose                                                     |
-| -------------------------- | ------------------ | ----------------------------------------------------------- |
-| `HOST`                     | `127.0.0.1`        | Listen address; container uses `0.0.0.0`.                   |
-| `PORT`                     | `3210`             | HTTP and WebSocket port.                                    |
-| `BONK_DATABASE_URL`        | empty              | Optional durable libSQL/Turso endpoint for ephemeral hosts. |
-| `BONK_DATABASE_AUTH_TOKEN` | empty              | Database secret, server and operator CLI only.              |
-| `BONK_DATA_PATH`           | `data/bonk.sqlite` | Persistent database file.                                   |
-| `BONK_MODS_DIR`            | `mods`             | Persistent pack repository and configuration.               |
-| `TRUST_PROXY`              | empty              | Trusted proxy addresses/subnets, comma-separated.           |
-| `BONK_CURATORS`            | empty              | Curator usernames, comma-separated.                         |
-
-The first account registered to a fresh database receives the owner role. Register the operator account before opening access to other players. See [service administration](SERVICE-PARITY.md) for roles.
-
-## Mods in the container
-
-The CLI is bundled at `dist/mods.mjs` and remains available after omitting development dependencies. Copy an inspected archive into the running container, install it, enable it, then restart:
-
-```sh
-docker compose cp ./pack.bonkmod game:/tmp/pack.bonkmod
-docker compose exec game npm run mods -- install /tmp/pack.bonkmod
-docker compose exec game npm run mods -- enable pack-id
-docker compose restart game
-```
-
-Room uploads compile automatically without a restart. Only operator-installed packs may execute Node server entrypoints.
-
-## Updates and backups
-
-Before updating, stop the game, back up both persistent volumes, then rebuild and start. For disk-backed Node, stop the process and copy the entire `data` and `mods` directories. For cloud mode, back up the remote database, including `mod_files` and `mod_file_chunks`; the app cache is not the source of truth. Copying only a live SQLite file can omit uncheckpointed WAL changes; use an SQLite-aware backup or stop the process first. Test restoration into separate storage. An image rollback alone does not roll back the database, so retain the matching backup.
-
-After deployment, check HTTPS, registration/login, a two-browser room, WebSocket transport, mod download consent, reconnect, and last-player room cleanup on the actual domain. Local tests do not verify DNS, certificate issuance, firewall rules, WAN behavior, or the hosting provider.
-
-## Distribution notices
-
-Retain third-party notices. The original Bonk client, fonts, artwork, and other assets remain owned by their respective rights holders; this project does not grant redistribution rights. Resolve those rights before public distribution. Original provenance and hashes remain in the development evidence, outside the public site.
+The Node launcher supports `TONK_REDIRECT_ORIGIN=https://YOUR_WORKER`. In that mode it serves the health check and redirects other requests with HTTP 307 before opening a game database. The existing Render service can retain old bookmarks without running a second game/account system. Remove the variable to roll back to Node hosting with its existing database. The target is a non-secret environment setting, managed through Render rather than duplicated in its Blueprint.

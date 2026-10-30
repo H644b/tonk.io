@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Bonk Workbench</title>
-    <link rel="icon" href="/game/graphics/tt/favicon-32x32.png" />
+    <title>Tonk.io</title>
+    <link rel="icon" href="/tonk.svg" />
     <link rel="stylesheet" href="/enhancements/shell.css" />
     <link rel="stylesheet" href="/modding/workbench.css" />
+    <link rel="stylesheet" href="/enhancements/administration.css" />
   </head>
   <body>
     <div hidden aria-hidden="true">
@@ -19,7 +20,7 @@
       <iframe
         id="maingameframe"
         src="/game/"
-        title="Bonk game"
+        title="Tonk game"
         allow="fullscreen; autoplay; clipboard-write"
       ></iframe>
     </main>
@@ -31,7 +32,7 @@
       aria-label="Workbench tools"
     >
       <header>
-        <h1>Bonk Workbench</h1>
+        <h1>Tonk.io</h1>
         <button id="close" aria-label="Close Workbench">Close</button>
       </header>
       <div id="tabs" role="tablist">
@@ -114,7 +115,7 @@ api.on('ready', () => {
         <form id="savemap">
           <label>Map name<input name="name" required maxlength="100" /></label
           ><label
-            >Bonk map code<textarea
+            >Tonk map code<textarea
               name="code"
               required
               spellcheck="false"
@@ -129,7 +130,7 @@ api.on('ready', () => {
         <button id="nativeaccount">Account settings</button>
         <h2>Credits</h2>
         <p>
-          Bonk.io client and assets © their respective owners. Protocol
+          Original client and third-party assets © their respective owners. Protocol
           compatibility based on Manifold by SneezingCactus (MIT).
         </p>
       </section>
@@ -139,5 +140,7 @@ api.on('ready', () => {
     </aside>
     <script type="module" src="/enhancements/shell.js"></script>
     <script defer src="/modding/workbench.js"></script>
+    <script type="module" src="/enhancements/administration.js"></script>
+    <script type="module" src="/enhancements/room-tools.js"></script>
   </body>
 </html>

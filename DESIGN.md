@@ -1,5 +1,5 @@
 ---
-name: Bonk Workbench
+name: Tonk Workbench
 description: The original Bonk visual world with native navigation and optional independent-server tools.
 colors:
   native-teal: "#009688"
@@ -226,7 +226,7 @@ components:
   progress-pack-fill:
     backgroundColor: "{colors.workbench-teal}"
 ---
-# Design System: Bonk Workbench
+# Design System: Tonk Workbench
 
 ## Overview
 

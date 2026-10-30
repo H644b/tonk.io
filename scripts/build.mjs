@@ -1,6 +1,14 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import { build } from "esbuild";
+import { zipSync } from "fflate";
+const exampleFiles={};
+for(const file of ["client.js","bonk.mod.json","tonk.mod.json","assets/orb.svg"])exampleFiles[file]=fs.readFileSync("public/help/examples/orb-kit/"+file);
+const compiledExample=await build({entryPoints:["public/help/examples/orb-kit/client.js"],bundle:true,platform:"browser",format:"esm",target:"es2022",write:false,legalComments:"none"});
+exampleFiles[".build/client.js"]=compiledExample.outputFiles[0].contents;
+exampleFiles[".build/prepared.json"]=Buffer.from(JSON.stringify({api:2,compiler:"esbuild"}));
+const exampleArchive=zipSync(exampleFiles);
+for(const extension of ["tonkmod","bonkmod"])fs.writeFileSync("public/help/examples/orb-kit-1.0.0."+extension,exampleArchive);
 await build({
   entryPoints: ["client/modding/runtime.ts", "client/modding/workbench.ts"],
   bundle: true,

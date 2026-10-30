@@ -1,0 +1,15 @@
+{
+  "automatedTests": 51,
+  "passed": 51,
+  "nodeTypeCheck": "passed",
+  "workersTypeCheck": "passed",
+  "productionAuditKnownVulnerabilities": 0,
+  "ci": {
+    "node": "24.22.1",
+    "npm": "10.9.2",
+    "npmCi": "passed",
+    "nodeBuild": "passed"
+  },
+  "visualVerdict": "single listed Admin request-order fix resolved; ship at reviewed scope",
+  "documentation": "complete; incumbent tokens preserved"
+}

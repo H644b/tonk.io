@@ -16,3 +16,10 @@ mods/data/
 mods/enabled.json
 
 .deployment/
+
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+workers/server-modules.generated.ts
+public/modding/esbuild.wasm

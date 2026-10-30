@@ -1,0 +1,15 @@
+{
+  "sourceSha256": "e549ed7b6840a908bc0e9c595321aa5e9dcfa787190bae9b60938e32dfa65c8e",
+  "hooks": [
+    {
+      "name": "natural completion",
+      "position": 1735512,
+      "code": ";if(v$q[33].hostID===v$q[33].getLSID())window.manifold.matchComplete();"
+    }
+  ],
+  "trigger": "Native simulation emits gameComplete only after its winner and winning-score checks; B8h handles cleanup and showing the lobby.",
+  "notification": "Only the host calls window.manifold.matchComplete(), which sends native return-to-lobby event14 to clear independent server metadata.",
+  "roundTelemetry": "Event47 reports individual map rounds; it cannot establish match completion.",
+  "usesTimeout": false,
+  "changesScore": false
+}

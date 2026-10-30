@@ -1,0 +1,137 @@
+{
+  "at": "2026-10-30T06:24:00.997Z",
+  "maps": 1482,
+  "feeds": [
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/picks.txt",
+      "status": 200,
+      "maps": 989
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_0_hot.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_0_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_0_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_0_ard.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_1_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_1_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_1_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_1_ard.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_2_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_2_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_2_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_2_ard.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_3_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_3_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_3_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_3_ard.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_4_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_4_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_4_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_4_ard.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_5_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_5_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_5_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_5_ard.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_6_hot.txt",
+      "status": 200,
+      "maps": 200
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_6_ar.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_6_sp.txt",
+      "status": 404
+    },
+    {
+      "url": "https://bonk2.io/scripts/hotmaps/cache3_6_ard.txt",
+      "status": 200,
+      "maps": 200
+    }
+  ],
+  "rejected": [],
+  "sha256": "85e0f53b987a4108bf210df5ed5764681f2dd01469f626b244cd377ec588c5c5"
+}

@@ -1,3 +1,4 @@
+import { NativeBots } from "../bots/runtime.ts";
 import {
   Entity,
   EntityWorld,
@@ -28,6 +29,7 @@ const hashBytes = async (bytes: Uint8Array) =>
     .join("");
 export class ClientModRuntime {
   readonly apiVersion = 2;
+  readonly bots = new NativeBots();
   readonly registries = new Registries();
   readonly events = new EventBus((error, owner, event) =>
     this.report(
@@ -68,7 +70,7 @@ export class ClientModRuntime {
     this.events.emit("engineReady", native);
   }
   report(message: string): void {
-    console.error("[Bonk Mods]", message);
+    console.error("[Tonk Mods]", message);
     parent.postMessage({ type: "bonk-mod-notice", message }, location.origin);
   }
   private progress(message: string, done = false): void {
@@ -526,6 +528,7 @@ export class ClientModRuntime {
     parent.postMessage({ type: "bonk-modpack-left" }, location.origin);
   }
   nativeEvent(type: string, context: any): void {
+    this.bots.observe(type, context);
     if (type === "worldReady") {
       this.nativeWorld = context;
       this.events.emit(type, context);
@@ -642,3 +645,4 @@ export class ClientModRuntime {
   }
 }
 window.BonkMods = new ClientModRuntime();
+(window as any).TonkMods = window.BonkMods;

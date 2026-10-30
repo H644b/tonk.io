@@ -41,7 +41,7 @@ export function createNativeHarness(source, { nativeEvent = () => {} } = {}) {
     }
   }
   selected.push(
-    "t$e[61]={};globalThis.__native={simulation:z,football:B,mapEncoder:Y,settings:t$e[97],mapList:t$e[95],constructors:t$e,Box2D:t$e[0][2]};",
+    "t$e[61]={mapVersion:15};globalThis.__native={simulation:z,football:B,mapEncoder:Y,settings:t$e[97],mapList:t$e[95],constructors:t$e,Box2D:t$e[0][2]};",
   );
   const prefix = source.slice(0, callback.parent.getStart(ast));
   const context = {
@@ -106,6 +106,7 @@ export function createNativeHarness(source, { nativeEvent = () => {} } = {}) {
     .map((n) => n.getText(ast))
     .join("\n");
   const program = `(function(E3G,p5h,Q2K){${head}\n${selected.join("\n")}\n})({}, {peerjs:{Peer:function(){}}}, __box2d);`;
+  vm.runInContext(fs.readFileSync("public/game/js/pako.js", "utf8"), context, {timeout:5000});
   vm.runInContext(program, context, { timeout: 5000 });
   return {
     native: context.__native,

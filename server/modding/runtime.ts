@@ -55,7 +55,7 @@ export class ModServer {
   >();
   private cleanups: (() => void)[] = [];
   private tick: NodeJS.Timeout;
-  constructor(readonly repository = new ModRepository()) {
+  constructor(readonly repository = new ModRepository(), readonly options: { loadModule?: (pack: Pack) => Promise<any>; maxPackBytes?: number } = {}) {
     this.available = repository.enabled();
     this.tick = setInterval(() => {
       for (const room of this.rooms.values())
@@ -70,7 +70,7 @@ export class ModServer {
   async initialize(): Promise<void> {
     for (const pack of this.available) {
       if (!pack.manifest.entrypoints.server) continue;
-      const module = await import(
+      const module = this.options.loadModule ? await this.options.loadModule(pack) : await import(
         pathToFileURL(path.join(pack.root, ".build/server.mjs")).href +
           "?hash=" +
           pack.hash
@@ -356,7 +356,7 @@ export class ModServer {
           mode: room.native.gameSettings.wbMode || null,
         };
         for (const player of room.native.playerSockets.filter(Boolean))
-          player.data.modReady = null;
+          player.data.modReady = player.data.bot ? room.profile.hash : null;
         room.native.io.to("main").emit("mods:profile", room.profile);
         ack?.({ ok: true, profile: room.profile });
       } catch (error) {
@@ -540,7 +540,7 @@ export class ModServer {
     });
     app.post(
       "/api/rooms/:id/modpack",
-      express.raw({ type: "application/octet-stream", limit: "64mb" }),
+      express.raw({ type: "application/octet-stream", limit: this.options.maxPackBytes || 64*1024*1024 }),
       async (req, res) => {
         const room = this.rooms.get(req.params.id),
           host = room?.native.playerSockets[room.native.hostId];
@@ -559,11 +559,13 @@ export class ModServer {
         if (!Buffer.isBuffer(req.body) || !req.body.length)
           return res
             .status(400)
-            .json({ error: "Upload a .bonkmod ZIP archive." });
+            .json({ error: "Upload a .tonkmod ZIP archive." });
         room.uploading = true;
         const repository = new ModRepository(
             path.join(this.repository.directory, "host-packs", room.id),
             false,
+            undefined,
+            this.options.maxPackBytes || 64*1024*1024,
           ),
           archive = path.join(
             repository.directory,
@@ -616,7 +618,7 @@ export class ModServer {
             mode: room.native.gameSettings.wbMode || null,
           };
           for (const player of room.native.playerSockets.filter(Boolean))
-            player.data.modReady = null;
+            player.data.modReady = player.data.bot ? room.profile.hash : null;
           // Response lets the publishing host approve its deliberate selection first;
           // all other members still receive their own explicit download/leave prompt.
           res.status(201).json({ ok: true, profile: room.profile });
@@ -678,6 +680,8 @@ export class ModServer {
     const room = this.rooms.get(id);
     if (room?.packs.length) this.events.emit("roomDispose", this.roomAPI(room));
     this.rooms.delete(id);
+    const cache=path.join(this.repository.directory,"host-packs",id);
+    if(fs.existsSync(cache))fs.rmSync(cache,{recursive:true,force:true});
   }
   dispose(): void {
     clearInterval(this.tick);

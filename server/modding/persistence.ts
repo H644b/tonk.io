@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
-import { cloudDatabase, type Database } from "../database.ts";
+import { cloudDatabase, withTransaction, type Database } from "../database.ts";
 const chunkSize = 256 * 1024;
 const hash = (bytes: Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
@@ -34,8 +34,7 @@ export class CloudFiles {
               bytes.subarray(index * chunkSize, (index + 1) * chunkSize),
             ),
           );
-      this.db.exec("BEGIN IMMEDIATE");
-      try {
+      withTransaction(this.db, () => {
         const old = this.db
           .prepare("SELECT generation FROM mod_files WHERE path = ?")
           .get(name);
@@ -48,11 +47,7 @@ export class CloudFiles {
           this.db
             .prepare("DELETE FROM mod_file_chunks WHERE generation = ?")
             .run(old.generation);
-        this.db.exec("COMMIT");
-      } catch (error) {
-        this.db.exec("ROLLBACK");
-        throw error;
-      }
+      });
     } catch (error) {
       this.db
         .prepare("DELETE FROM mod_file_chunks WHERE generation = ?")

@@ -33,5 +33,7 @@ ${anchors.tools}`,
     anchors.end,
     '<script type="module" src="/enhancements/native-ui.js"></script></body>',
   );
+  html=html.replace(/BONK 1:/g,'TONK 1:').replace(/Bonk\.io/g,'Tonk.io');
+  html=html.replace('</body>','<script type="module" src="/enhancements/rebrand.js"></script></body>');
   return html;
 }

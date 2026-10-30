@@ -1,3 +1,4 @@
+import { prepareHostPack } from "./prepare-pack.ts";
 /** Parent-page controls for code packs. Executable pack bytes stay in the game runtime. */
 type Pack = {
   id: string;
@@ -69,8 +70,8 @@ function initialize(frame: HTMLIFrameElement, mount: HTMLElement) {
     (window as any).bonkWorkbench?.help("modding"),
   );
   const example = node("a", "Download Orb Kit example");
-  example.href = "/help/examples/orb-kit-1.0.0.bonkmod";
-  example.download = "orb-kit-1.0.0.bonkmod";
+  example.href = "/help/examples/orb-kit-1.0.0.tonkmod";
+  example.download = "orb-kit-1.0.0.tonkmod";
   const links = node("p", "", "modpack-links");
   links.append(help, example);
   mount.append(links);
@@ -138,20 +139,22 @@ function initialize(frame: HTMLIFrameElement, mount: HTMLElement) {
   const fileLabel = node("label", "Modpack file");
   const file = node("input");
   file.type = "file";
-  file.accept = ".bonkmod,.zip,application/zip";
+  file.accept = ".tonkmod,.bonkmod,.zip,application/zip";
   fileLabel.append(file);
   const publish = button("Upload & apply", () =>
     hostChange(async () => {
       const archive = file.files?.[0];
-      if (!archive) throw Error("Choose a .bonkmod or .zip archive first.");
-      if (!/\.(bonkmod|zip)$/i.test(archive.name))
+      if (!archive) throw Error("Choose a .tonkmod or .zip archive first.");
+      if (!/\.(tonkmod|bonkmod|zip)$/i.test(archive.name))
         throw Error(
-          "Choose a .bonkmod or .zip pack containing bonk.mod.json, code, and assets.",
+          "Choose a .tonkmod or .zip pack containing tonk.mod.json, code, and assets.",
         );
-      if (archive.size > 64 * 1024 * 1024)
-        throw Error("Pack archives must be 64 MB or smaller.");
       const room = native()?.room;
       if (!room) throw Error("Join a room first.");
+      const platform: { packCompiler?: string; maxPackBytes?: number } = await fetch("/api/platform").then(response => response.ok ? response.json() : {}).catch(() => ({}));
+      const limit = platform.maxPackBytes || 64 * 1024 * 1024;
+      if (archive.size > limit) throw Error(`Pack archives must be ${Math.floor(limit / 1024 / 1024)} MB or smaller.`);
+      const payload = platform.packCompiler === "browser" ? await prepareHostPack(archive, platform.maxPackBytes) : archive;
       const credential = await emit("mods:host-token");
       if (!credential.token)
         throw Error("The server did not issue a room-host upload token.");
@@ -163,7 +166,7 @@ function initialize(frame: HTMLIFrameElement, mount: HTMLElement) {
             "Content-Type": "application/octet-stream",
             "X-Bonk-Host": credential.token,
           },
-          body: archive,
+          body: payload,
         },
       );
       const result = await response.json();

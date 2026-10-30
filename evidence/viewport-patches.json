@@ -1,0 +1,26 @@
+{
+  "sourceSha256": "e549ed7b6840a908bc0e9c595321aa5e9dcfa787190bae9b60938e32dfa65c8e",
+  "hooks": [
+    {
+      "name": "modern",
+      "position": 2065409,
+      "code": ";window.bonkViewport.modern(this);"
+    },
+    {
+      "name": "legacy",
+      "position": 2274063,
+      "code": ";window.bonkViewport.legacy({renderer:w6s[42],stage:w6s[26],container:w6s[0][0],thumbnail:w6s[73],editor:w6s[87],background:w6s[81],fader:w6s[58]});"
+    },
+    {
+      "name": "football",
+      "position": 2644685,
+      "code": ";window.bonkViewport.football({renderer:H_E[31],stage:H_E[11],container:H_E[0][0],background:H_E[69]});"
+    }
+  ],
+  "projection": "Preserve original uniform scale, expand backing canvas, center horizontally and anchor native 500/ppm death plane to viewport bottom; extend background and fader",
+  "excluded": [
+    "map editor pointer projection",
+    "map thumbnails"
+  ],
+  "physicsChanged": false
+}

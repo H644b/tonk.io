@@ -211,7 +211,7 @@ fs.writeFileSync("public/game/js/alpha2s.local.js", source);
 let html = fs.readFileSync("evidence/original/gameframe-release.html", "utf8");
 html = html.replace(
   "<head>",
-  '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bonk Workbench</title><link rel="stylesheet" href="/enhancements/game.css"><script src="/enhancements/network.js"></script>',
+  '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tonk.io</title><link rel="stylesheet" href="/enhancements/game.css"><script src="/enhancements/network.js"></script>',
 );
 html = html.replace(/if \( self == top \) \{[\s\S]*?\}/, "");
 html = html.replace(

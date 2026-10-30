@@ -1,0 +1,39 @@
+{
+  "sourceSha256": "4d216785f776c8695f9f63b79473a61b862e85665929aea5c15de902dcd0cab1",
+  "patchedSha256": "09aa2a86ea2a70a2be6087bf0b265d173da06270bf1905163bd2f8a4f4b2ad1e",
+  "insertionOnly": true,
+  "nativePhysicsChanged": false,
+  "accountStateChanged": false,
+  "hooks": [
+    {
+      "name": "session:native-leave",
+      "position": 1745846,
+      "code": ";this.leaveRoom=function(){if(!v$q[33])return false;b2$(\"endSession\");return true;};if(window.manifold)window.manifold.nativeSession=this;",
+      "nativePath": "F8 b2$(\"endSession\") -> f7E listener -> F8.destroy() -> network.destroy/socket.close + returnToMain/refreshIfNecessary"
+    },
+    {
+      "name": "session:cancel-join",
+      "position": 2219283,
+      "code": ";if(window.manifold)window.manifold.cancelNativeJoin=function(){const wbHadSession=!!j0e[451];if(j0e[451]){j0e[451].destroy();j0e[451]=null;}j0e[473]=false;j0e[562]=-1;j0e[285]=\"\";P5i();if(typeof anime.remove===\"function\")anime.remove(j0e[538]);j0e[538].style.visibility=\"hidden\";j0e[538].style.opacity=\"0\";j0e[490]=[];j0e[624].innerHTML=\"\";j0e[513].unblur();if(j0e[3].style.display===\"none\")j0e[9].returnToMain();if(t$e[61].classic)k3G();return wbHadSession;};",
+      "nativePath": "g7 connecting Cancel -> pending F8.destroy + P5i/enableMouseEvents + replay.unblur + classic menu; invalidate K7s address ID and synchronously remove connecting fade"
+    },
+    {
+      "name": "session:empty-replay-credit",
+      "position": 2214050,
+      "code": ";if(!j0e[81]){j0e[60].classList.remove(\"pretty_top_replay_fav_checked\");j0e[60].classList.add(\"pretty_top_replay_fav_disabled\");return;}",
+      "nativePath": "D70 replay favorite button updater; independent servers can have no current menu replay"
+    },
+    {
+      "name": "session:confirmed-round",
+      "position": 2679659,
+      "code": ";if(window.manifold&&window.manifold.confirmedRound&&a5H[96]&&a5H[96].hostID===a5H[96].getLSID()&&a5H[60].ga===\"b\"&&a5H[4][a5H[6]-30]&&a5H[4][a5H[6]-30].fte===z.fte-1){const wbConfirmedState=a5H[4][a5H[6]-30];const wbConfirmedMap=a5H[60].map&&a5H[60].map.m||{};window.manifold.confirmedRound({round:wbConfirmedState.rc,winner:wbConfirmedState.lscr,teams:!!a5H[60].tea,frame:a5H[6]-30,mapid:wbConfirmedMap.dbid,dbv:wbConfirmedMap.dbv,mode:a5H[60].mo});}",
+      "nativeCondition": "t$e[61][y4F[9][640]] == false && a5H[4][a5H[6] - 30] && a5H[60][y4F[9][714]] == k7V.w65(2850)",
+      "confirmedFrameLag": 30,
+      "finishCounter": "historicalState.fte === native z.fte - 1 (89 in pinned client)"
+    }
+  ],
+  "limitations": [
+    "The native 30-frame settlement convention is preserved; this does not establish server-authoritative physics",
+    "Browser cleanup and consent navigation require separate UI verification"
+  ]
+}

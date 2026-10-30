@@ -1,0 +1,74 @@
+[
+  {
+    "mode": "b",
+    "moves": 1176,
+    "actions": 1960,
+    "wins": 8,
+    "scores": [
+      0,
+      8
+    ]
+  },
+  {
+    "mode": "v",
+    "moves": 855,
+    "actions": 1752,
+    "wins": 9,
+    "scores": [
+      0,
+      9
+    ]
+  },
+  {
+    "mode": "sp",
+    "moves": 1070,
+    "actions": 1800,
+    "wins": 6,
+    "scores": [
+      2,
+      6
+    ]
+  },
+  {
+    "mode": "ar",
+    "moves": 1084,
+    "actions": 1812,
+    "wins": 7,
+    "scores": [
+      0,
+      7
+    ]
+  },
+  {
+    "mode": "ard",
+    "moves": 1016,
+    "actions": 1736,
+    "wins": 8,
+    "scores": [
+      0,
+      8
+    ]
+  },
+  {
+    "mode": "bs",
+    "moves": 1176,
+    "actions": 1960,
+    "wins": 8,
+    "scores": [
+      0,
+      8
+    ]
+  },
+  {
+    "mode": "f",
+    "moves": 1176,
+    "actions": 2400,
+    "wins": 6,
+    "scores": [
+      0,
+      0,
+      0,
+      6
+    ]
+  }
+]

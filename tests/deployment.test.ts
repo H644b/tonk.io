@@ -6,7 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-async function start(directory: string, trustProxy: string) {
+async function start(directory: string, trustProxy: string, extra: Record<string,string> = {}) {
   const child = spawn(process.execPath, ["dist/server.mjs"], {
     env: {
       ...process.env,
@@ -17,8 +17,10 @@ async function start(directory: string, trustProxy: string) {
       HOST: "127.0.0.1",
       PORT: "0",
       TRUST_PROXY: trustProxy,
+      TONK_REDIRECT_ORIGIN: "",
       BONK_DATA_PATH: path.join(directory, "bonk.sqlite"),
       BONK_MODS_DIR: path.join(directory, "mods"),
+      ...extra,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -111,4 +113,13 @@ test("production proxy trust, secure sessions, graceful shutdown and database re
     if (running) await stop(running.child);
     fs.rmSync(directory, { recursive: true, force: true });
   }
+});
+
+
+test("legacy host redirects to Tonk without opening its former database",async()=>{
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),"tonk-redirect-"));let running;
+ try{running=await start(directory,"",{TONK_REDIRECT_ORIGIN:"https://game.example",BONK_DATABASE_URL:"invalid://unused"});
+ const response=await fetch(running.url+"/?room=sample",{redirect:"manual"});assert.equal(response.status,307);assert.equal(response.headers.get("location"),"https://game.example/?room=sample");
+ assert.equal((await(await fetch(running.url+"/api/health")).json()).redirect,true);assert.equal(fs.existsSync(path.join(directory,"bonk.sqlite")),false);
+ }finally{if(running)await stop(running.child);fs.rmSync(directory,{recursive:true,force:true})}
 });

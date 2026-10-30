@@ -183,6 +183,7 @@ $("#create").onsubmit = async (e) => {
       { type: "bonk-room-created", room: r.id },
       location.origin,
     );
+    show(false);
   } catch (e) {
     status(e.message);
   }
@@ -203,6 +204,11 @@ window.addEventListener("message", (e) => {
     connection.textContent = "Connected";
     updateNative();
     modEvent("room", { id: e.data.room });
+  }
+  if (e.data.type === "bonk-disconnected") {
+    connection.textContent = "Ready";
+    host = false;
+    updateNative();
   }
   if (e.data.type === "bonk-host") {
     host = !!e.data.isHost;
@@ -337,7 +343,7 @@ $("#exportmod").onclick = () =>
       type: "css",
       css: ".brownButton{background:#007f73!important}",
     },
-    "teal-controls.bonkmod.json",
+    "teal-controls.tonkmod.json",
   );
 $("#loadscript").onchange = async (e) => {
   const file = e.target.files[0];

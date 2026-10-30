@@ -34,7 +34,7 @@ ${table(
     id: "modding",
     title: "Modding",
     content: `<h2>Modpacks</h2>
-<p>A <code>.bonkmod</code> archive contains a <code>bonk.mod.json</code> manifest, JavaScript or TypeScript entrypoints, and assets.</p>
+<p>A <code>.tonkmod</code> archive contains a <code>tonk.mod.json</code> manifest, JavaScript or TypeScript entrypoints, and assets.</p>
 <h3>Client packs</h3>
 <p>Upload a pack in Workbench → Mods while hosting a room. Players must accept the pack before joining. Changed content requires a new approval.</p>
 <h3>Server entrypoints</h3>
@@ -46,26 +46,26 @@ ${table(
     id: "create",
     title: "Create a modpack",
     content: `<h2>Create a modpack</h2>
-<p>Use an ES module for client behavior and an optional server ES module for shared logic. Export <code>setup(api)</code> or a default function from each entrypoint. Keep a <code>bonk.mod.json</code> manifest at the root of the pack.</p>
+<p>Use an ES module for client behavior and an optional server ES module for shared logic. Export <code>setup(api)</code> or a default function from each entrypoint. Keep a <code>tonk.mod.json</code> manifest at the root of the pack.</p>
 ${code(`my-mod/
-  bonk.mod.json
+  tonk.mod.json
   client.js
   server.js
   assets/
     orb.svg`)}
 <h3>Installation</h3>
-<p>Run mod commands from the Bonk Workbench project folder. Install a folder during development, then package it for distribution once it works.</p>
+<p>Run mod commands from the Tonk Workbench project folder. Install a folder during development, then package it for distribution once it works.</p>
 ${code(`npm run mods -- install ./my-mod
 npm run mods -- enable my-mod
 npm run mods -- list`)}
 <p>Enabled packs are loaded by the server after restart. Use Workbench → Mods to see packs and the room profile. Test changes in a private room before sharing them.</p>
 <h3>Share a client pack as a room host</h3>
-<p>Package your client entrypoint and assets as a <code>.bonkmod</code>, then use the host’s pack upload in Workbench → Mods. Peers choose whether to download and join. Uploading a pack with a server entrypoint requires the operator workflow instead.</p>
+<p>Package your client entrypoint and assets as a <code>.tonkmod</code>, then use the host’s pack upload in Workbench → Mods. Peers choose whether to download and join. Uploading a pack with a server entrypoint requires the operator workflow instead.</p>
 <p>Use <code>npm run mods -- disable my-mod</code> to disable a pack. A fresh server start and page reload give code modules a clean lifecycle after changing installed files.</p>
 <h3>Package and share</h3>
-${code(`npm run mods -- pack ./my-mod ./my-mod-1.0.0.bonkmod
-npm run mods -- install ./my-mod-1.0.0.bonkmod`)}
-<p>A <code>.bonkmod</code> is a ZIP archive with the manifest at its root. The installer accepts a folder or archive, up to 64 MB expanded and 2,048 files. It rejects symlinks and paths that escape the pack.</p>
+${code(`npm run mods -- pack ./my-mod ./my-mod-1.0.0.tonkmod
+npm run mods -- install ./my-mod-1.0.0.tonkmod`)}
+<p>A <code>.tonkmod</code> is a ZIP archive with the manifest at its root. The installer accepts a folder or archive, up to 64 MB expanded and 2,048 files. It rejects symlinks and paths that escape the pack.</p>
 <h3>JavaScript and TypeScript</h3>
 <p>The installer bundles client and server entrypoints with esbuild. JavaScript and TypeScript entrypoints are supported, including relative imports from files inside the pack. Client code must use browser-compatible APIs. Include source dependencies in your pack; <code>node_modules</code> is excluded from archives.</p>`,
   },
@@ -73,7 +73,7 @@ npm run mods -- install ./my-mod-1.0.0.bonkmod`)}
     id: "manifest",
     title: "Manifest & dependencies",
     content: `<h2>The pack manifest</h2>
-<p><code>bonk.mod.json</code> declares identity, API version, entrypoints, dependencies, and named assets.</p>
+<p><code>tonk.mod.json</code> declares identity, API version, entrypoints, dependencies, and named assets.</p>
 ${code(`{
   "schemaVersion": 2,
   "id": "my-mod",
@@ -535,12 +535,12 @@ ${code(`export function setup(api) {
     title: "Download an example",
     content: `<h2>Orb Kit</h2>
 <p>A complete client code pack adds a textured bouncing physics entity, a component timer, a custom world property, and a synchronized host spawn command. Its manifest, code, and SVG asset are included.</p>
-<p><a href="/help/examples/orb-kit-1.0.0.bonkmod" download>Download Orb Kit 1.0.0 (.bonkmod)</a></p>
+<p><a href="/help/examples/orb-kit-1.0.0.tonkmod" download>Download Orb Kit 1.0.0 (.tonkmod)</a></p>
 <ol><li>Download the archive and inspect the source.</li><li>Open a custom room as host, then Workbench → Mods and upload the client pack. Alternatively install and enable it with the operator CLI.</li><li>Each player chooses <strong>Download &amp; Join</strong> for this exact pack profile.</li><li>Start a match on a native map. One orb spawns with the round; the host can press <strong>O</strong> to add another.</li><li>Check that both clients see the same orb, contacts, movement, and removal. The lifetime component removes each orb after 600 simulation steps.</li></ol>
 <h3>Read the files</h3>
-<ul><li><a href="/help/examples/orb-kit/bonk.mod.json" target="_blank" rel="noopener">bonk.mod.json</a> — identity, client entrypoint, and named asset.</li><li><a href="/help/examples/orb-kit/client.js" target="_blank" rel="noopener">client.js</a> — setup, entity/component/property registration, native creation event, host command, and input.</li><li><a href="/help/examples/orb-kit/assets/orb.svg" target="_blank" rel="noopener">assets/orb.svg</a> — a custom texture.</li></ul>
+<ul><li><a href="/help/examples/orb-kit/tonk.mod.json" target="_blank" rel="noopener">tonk.mod.json</a> — identity, client entrypoint, and named asset.</li><li><a href="/help/examples/orb-kit/client.js" target="_blank" rel="noopener">client.js</a> — setup, entity/component/property registration, native creation event, host command, and input.</li><li><a href="/help/examples/orb-kit/assets/orb.svg" target="_blank" rel="noopener">assets/orb.svg</a> — a custom texture.</li></ul>
 <h3>Install through the operator CLI</h3>
-${code(`npm run mods -- install ./orb-kit-1.0.0.bonkmod
+${code(`npm run mods -- install ./orb-kit-1.0.0.tonkmod
 npm run mods -- enable orb-kit
 # Restart the server, then reload clients.`)}
 <p>Change the pack ID and its registration namespaces when creating your own pack. Increment the version before installing changed bytes.</p>`,

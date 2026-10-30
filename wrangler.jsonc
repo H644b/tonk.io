@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tonk",
+  "main": "dist/worker.mjs",
+  "account_id": "ae3a72a91b6bc373fbb68cc8a015774d",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {"directory":"public","binding":"ASSETS","run_worker_first":["/api/*","/compat/*","/rooms/*","/roompacks/*","/modpacks/*","/enhancements/mod-worker.js"]},
+  "durable_objects": {"bindings":[{"name":"GAME","class_name":"GameServer"}]},
+  "migrations": [{"tag":"v1","new_sqlite_classes":["GameServer"]}],
+  "observability": {"enabled":true}
+}

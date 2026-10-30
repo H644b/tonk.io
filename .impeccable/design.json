@@ -1,0 +1,826 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-22T05:30:15.494370+00:00",
+  "title": "Design System: Tonk Workbench",
+  "extensions": {
+    "colorMeta": {
+      "native-teal": {
+        "role": "primary",
+        "displayName": "Native Teal",
+        "tonalRamp": [
+          "oklch(15% 0.10743 183.38)",
+          "oklch(26% 0.10743 183.38)",
+          "oklch(38% 0.10743 183.38)",
+          "oklch(49% 0.10743 183.38)",
+          "oklch(61% 0.10743 183.38)",
+          "oklch(72% 0.10743 183.38)",
+          "oklch(84% 0.10743 183.38)",
+          "oklch(95% 0.10743 183.38)"
+        ]
+      },
+      "workbench-teal": {
+        "role": "primary",
+        "displayName": "Workbench Teal",
+        "tonalRamp": [
+          "oklch(15% 0.09519 183.42)",
+          "oklch(26% 0.09519 183.42)",
+          "oklch(38% 0.09519 183.42)",
+          "oklch(49% 0.09519 183.42)",
+          "oklch(61% 0.09519 183.42)",
+          "oklch(72% 0.09519 183.42)",
+          "oklch(84% 0.09519 183.42)",
+          "oklch(95% 0.09519 183.42)"
+        ]
+      },
+      "workbench-close": {
+        "role": "primary",
+        "displayName": "Workbench Close",
+        "tonalRamp": [
+          "oklch(15% 0.08410 183.73)",
+          "oklch(26% 0.08410 183.73)",
+          "oklch(38% 0.08410 183.73)",
+          "oklch(49% 0.08410 183.73)",
+          "oklch(61% 0.08410 183.73)",
+          "oklch(72% 0.08410 183.73)",
+          "oklch(84% 0.08410 183.73)",
+          "oklch(95% 0.08410 183.73)"
+        ]
+      },
+      "help-link": {
+        "role": "primary",
+        "displayName": "Help Link",
+        "tonalRamp": [
+          "oklch(15% 0.07736 183.74)",
+          "oklch(26% 0.07736 183.74)",
+          "oklch(38% 0.07736 183.74)",
+          "oklch(49% 0.07736 183.74)",
+          "oklch(61% 0.07736 183.74)",
+          "oklch(72% 0.07736 183.74)",
+          "oklch(84% 0.07736 183.74)",
+          "oklch(95% 0.07736 183.74)"
+        ],
+        "source": "public/enhancements/help.css; public/modding/workbench.css",
+        "rationale": "Help link and consent focus share a deliberate deep teal for reading and modal focus."
+      },
+      "workbench-link": {
+        "role": "primary",
+        "displayName": "Workbench Link",
+        "tonalRamp": [
+          "oklch(15% 0.08358 183.64)",
+          "oklch(26% 0.08358 183.64)",
+          "oklch(38% 0.08358 183.64)",
+          "oklch(49% 0.08358 183.64)",
+          "oklch(61% 0.08358 183.64)",
+          "oklch(72% 0.08358 183.64)",
+          "oklch(84% 0.08358 183.64)",
+          "oklch(95% 0.08358 183.64)"
+        ],
+        "source": "public/enhancements/shell.css",
+        "rationale": "Retains the shell link color independently of Help links."
+      },
+      "brown": {
+        "role": "secondary",
+        "displayName": "Brown",
+        "tonalRamp": [
+          "oklch(15% 0.05253 40.69)",
+          "oklch(26% 0.05253 40.69)",
+          "oklch(38% 0.05253 40.69)",
+          "oklch(49% 0.05253 40.69)",
+          "oklch(61% 0.05253 40.69)",
+          "oklch(72% 0.05253 40.69)",
+          "oklch(84% 0.05253 40.69)",
+          "oklch(95% 0.05253 40.69)"
+        ]
+      },
+      "native-brown-hover": {
+        "role": "secondary",
+        "displayName": "Native Brown Hover",
+        "tonalRamp": [
+          "oklch(15% 0.04869 40.29)",
+          "oklch(26% 0.04869 40.29)",
+          "oklch(38% 0.04869 40.29)",
+          "oklch(49% 0.04869 40.29)",
+          "oklch(61% 0.04869 40.29)",
+          "oklch(72% 0.04869 40.29)",
+          "oklch(84% 0.04869 40.29)",
+          "oklch(95% 0.04869 40.29)"
+        ]
+      },
+      "workbench-brown-hover": {
+        "role": "secondary",
+        "displayName": "Workbench Brown Hover",
+        "tonalRamp": [
+          "oklch(15% 0.04957 42.97)",
+          "oklch(26% 0.04957 42.97)",
+          "oklch(38% 0.04957 42.97)",
+          "oklch(49% 0.04957 42.97)",
+          "oklch(61% 0.04957 42.97)",
+          "oklch(72% 0.04957 42.97)",
+          "oklch(84% 0.04957 42.97)",
+          "oklch(95% 0.04957 42.97)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "native-panel": {
+        "role": "neutral",
+        "displayName": "Native Panel",
+        "tonalRamp": [
+          "oklch(15% 0.01124 226.00)",
+          "oklch(26% 0.01124 226.00)",
+          "oklch(38% 0.01124 226.00)",
+          "oklch(49% 0.01124 226.00)",
+          "oklch(61% 0.01124 226.00)",
+          "oklch(72% 0.01124 226.00)",
+          "oklch(84% 0.01124 226.00)",
+          "oklch(95% 0.01124 226.00)"
+        ]
+      },
+      "help-rail": {
+        "role": "neutral",
+        "displayName": "Help Rail",
+        "tonalRamp": [
+          "oklch(15% 0.01490 224.53)",
+          "oklch(26% 0.01490 224.53)",
+          "oklch(38% 0.01490 224.53)",
+          "oklch(49% 0.01490 224.53)",
+          "oklch(61% 0.01490 224.53)",
+          "oklch(72% 0.01490 224.53)",
+          "oklch(84% 0.01490 224.53)",
+          "oklch(95% 0.01490 224.53)"
+        ],
+        "source": "public/enhancements/help.css",
+        "rationale": "Help topic column and phone topic-rail background."
+      },
+      "help-rail-hover": {
+        "role": "neutral",
+        "displayName": "Help Rail Hover",
+        "tonalRamp": [
+          "oklch(15% 0.01860 223.65)",
+          "oklch(26% 0.01860 223.65)",
+          "oklch(38% 0.01860 223.65)",
+          "oklch(49% 0.01860 223.65)",
+          "oklch(61% 0.01860 223.65)",
+          "oklch(72% 0.01860 223.65)",
+          "oklch(84% 0.01860 223.65)",
+          "oklch(95% 0.01860 223.65)"
+        ],
+        "source": "public/enhancements/help.css",
+        "rationale": "Muted topic hover beside the native gray reading ground."
+      },
+      "help-code": {
+        "role": "neutral",
+        "displayName": "Help Code",
+        "tonalRamp": [
+          "oklch(15% 0.00508 228.82)",
+          "oklch(26% 0.00508 228.82)",
+          "oklch(38% 0.00508 228.82)",
+          "oklch(49% 0.00508 228.82)",
+          "oklch(61% 0.00508 228.82)",
+          "oklch(72% 0.00508 228.82)",
+          "oklch(84% 0.00508 228.82)",
+          "oklch(95% 0.00508 228.82)"
+        ],
+        "source": "public/enhancements/help.css",
+        "rationale": "Help source-example reading inset."
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "muted-copy": {
+        "role": "neutral",
+        "displayName": "Muted Copy",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ],
+        "source": "public/enhancements/shell.css",
+        "rationale": "Connection status has a smaller, muted text role."
+      },
+      "hash-copy": {
+        "role": "neutral",
+        "displayName": "Hash Copy",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ],
+        "source": "public/modding/workbench.css",
+        "rationale": "Exact profile metadata uses muted dark text."
+      },
+      "status-error": {
+        "role": "secondary",
+        "displayName": "Status Error",
+        "tonalRamp": [
+          "oklch(15% 0.11547 29.62)",
+          "oklch(26% 0.11547 29.62)",
+          "oklch(38% 0.11547 29.62)",
+          "oklch(49% 0.11547 29.62)",
+          "oklch(61% 0.11547 29.62)",
+          "oklch(72% 0.11547 29.62)",
+          "oklch(84% 0.11547 29.62)",
+          "oklch(95% 0.11547 29.62)"
+        ],
+        "source": "public/enhancements/shell.css",
+        "rationale": "Persistent shell status uses its established rust-brown copy."
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Divider",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "field-border": {
+        "role": "neutral",
+        "displayName": "Field Border",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00)",
+          "oklch(26% 0.00000 0.00)",
+          "oklch(38% 0.00000 0.00)",
+          "oklch(49% 0.00000 0.00)",
+          "oklch(61% 0.00000 0.00)",
+          "oklch(72% 0.00000 0.00)",
+          "oklch(84% 0.00000 0.00)",
+          "oklch(95% 0.00000 0.00)"
+        ]
+      },
+      "help-table-line": {
+        "role": "neutral",
+        "displayName": "Help Table Line",
+        "tonalRamp": [
+          "oklch(15% 0.01854 229.08)",
+          "oklch(26% 0.01854 229.08)",
+          "oklch(38% 0.01854 229.08)",
+          "oklch(49% 0.01854 229.08)",
+          "oklch(61% 0.01854 229.08)",
+          "oklch(72% 0.01854 229.08)",
+          "oklch(84% 0.01854 229.08)",
+          "oklch(95% 0.01854 229.08)"
+        ],
+        "source": "public/enhancements/help.css",
+        "rationale": "Quiet reference-table row separator."
+      },
+      "pack-line": {
+        "role": "neutral",
+        "displayName": "Pack Line",
+        "tonalRamp": [
+          "oklch(15% 0.01861 229.09)",
+          "oklch(26% 0.01861 229.09)",
+          "oklch(38% 0.01861 229.09)",
+          "oklch(49% 0.01861 229.09)",
+          "oklch(61% 0.01861 229.09)",
+          "oklch(72% 0.01861 229.09)",
+          "oklch(84% 0.01861 229.09)",
+          "oklch(95% 0.01861 229.09)"
+        ],
+        "source": "public/modding/workbench.css",
+        "rationale": "Shared fieldset, pack row, consent pack row, and legacy-divider stroke."
+      },
+      "pack-progress-track": {
+        "role": "neutral",
+        "displayName": "Pack Progress Track",
+        "tonalRamp": [
+          "oklch(15% 0.01572 229.01)",
+          "oklch(26% 0.01572 229.01)",
+          "oklch(38% 0.01572 229.01)",
+          "oklch(49% 0.01572 229.01)",
+          "oklch(61% 0.01572 229.01)",
+          "oklch(72% 0.01572 229.01)",
+          "oklch(84% 0.01572 229.01)",
+          "oklch(95% 0.01572 229.01)"
+        ],
+        "source": "public/modding/workbench.css",
+        "rationale": "Muted track behind teal code-pack loading progress."
+      },
+      "stage": {
+        "role": "neutral",
+        "displayName": "Stage",
+        "tonalRamp": [
+          "oklch(15% 0.02882 246.94)",
+          "oklch(26% 0.02882 246.94)",
+          "oklch(38% 0.02882 246.94)",
+          "oklch(49% 0.02882 246.94)",
+          "oklch(61% 0.02882 246.94)",
+          "oklch(72% 0.02882 246.94)",
+          "oklch(84% 0.02882 246.94)",
+          "oklch(95% 0.02882 246.94)"
+        ]
+      },
+      "navigation-bar": {
+        "role": "neutral",
+        "displayName": "Navigation Bar",
+        "tonalRamp": [
+          "oklch(15% 0.03839 251.90 / 0.780)",
+          "oklch(26% 0.03839 251.90 / 0.780)",
+          "oklch(38% 0.03839 251.90 / 0.780)",
+          "oklch(49% 0.03839 251.90 / 0.780)",
+          "oklch(61% 0.03839 251.90 / 0.780)",
+          "oklch(72% 0.03839 251.90 / 0.780)",
+          "oklch(84% 0.03839 251.90 / 0.780)",
+          "oklch(95% 0.03839 251.90 / 0.780)"
+        ],
+        "source": "public/game/css/prettymenu.css",
+        "rationale": "Original translucent native top-navigation ground."
+      },
+      "navigation-even": {
+        "role": "neutral",
+        "displayName": "Navigation Even",
+        "tonalRamp": [
+          "oklch(15% 0.03514 252.32)",
+          "oklch(26% 0.03514 252.32)",
+          "oklch(38% 0.03514 252.32)",
+          "oklch(49% 0.03514 252.32)",
+          "oklch(61% 0.03514 252.32)",
+          "oklch(72% 0.03514 252.32)",
+          "oklch(84% 0.03514 252.32)",
+          "oklch(95% 0.03514 252.32)"
+        ]
+      },
+      "navigation-odd": {
+        "role": "neutral",
+        "displayName": "Navigation Odd",
+        "tonalRamp": [
+          "oklch(15% 0.03095 252.73)",
+          "oklch(26% 0.03095 252.73)",
+          "oklch(38% 0.03095 252.73)",
+          "oklch(49% 0.03095 252.73)",
+          "oklch(61% 0.03095 252.73)",
+          "oklch(72% 0.03095 252.73)",
+          "oklch(84% 0.03095 252.73)",
+          "oklch(95% 0.03095 252.73)"
+        ]
+      },
+      "navigation-hover": {
+        "role": "neutral",
+        "displayName": "Navigation Hover",
+        "tonalRamp": [
+          "oklch(15% 0.04841 250.29)",
+          "oklch(26% 0.04841 250.29)",
+          "oklch(38% 0.04841 250.29)",
+          "oklch(49% 0.04841 250.29)",
+          "oklch(61% 0.04841 250.29)",
+          "oklch(72% 0.04841 250.29)",
+          "oklch(84% 0.04841 250.29)",
+          "oklch(95% 0.04841 250.29)"
+        ]
+      },
+      "native-xp-track": {
+        "role": "neutral",
+        "displayName": "Native Xp Track",
+        "tonalRamp": [
+          "oklch(15% 0.02534 253.82)",
+          "oklch(26% 0.02534 253.82)",
+          "oklch(38% 0.02534 253.82)",
+          "oklch(49% 0.02534 253.82)",
+          "oklch(61% 0.02534 253.82)",
+          "oklch(72% 0.02534 253.82)",
+          "oklch(84% 0.02534 253.82)",
+          "oklch(95% 0.02534 253.82)"
+        ],
+        "source": "public/enhancements/help.css",
+        "rationale": "Original XP track, edge, and segment marks compacted into native identity."
+      },
+      "consent-backdrop": {
+        "role": "neutral",
+        "displayName": "Consent Backdrop",
+        "tonalRamp": [
+          "oklch(15% 0.00000 0.00 / 0.450)",
+          "oklch(26% 0.00000 0.00 / 0.450)",
+          "oklch(38% 0.00000 0.00 / 0.450)",
+          "oklch(49% 0.00000 0.00 / 0.450)",
+          "oklch(61% 0.00000 0.00 / 0.450)",
+          "oklch(72% 0.00000 0.00 / 0.450)",
+          "oklch(84% 0.00000 0.00 / 0.450)",
+          "oklch(95% 0.00000 0.00 / 0.450)"
+        ],
+        "source": "public/modding/workbench.css",
+        "rationale": "Native modal top-layer dimming for executable-content consent and protected loading."
+      },
+      "native-xp-fill": {
+        "role": "tertiary",
+        "displayName": "Native XP Fill",
+        "source": "public/game/css/pagelayout.css",
+        "rationale": "Retained native purple XP fill; preserve runtime animation styling rather than applying Workbench teal.",
+        "tonalRamp": [
+          "oklch(15% 0.17797 281.14)",
+          "oklch(26% 0.17797 281.14)",
+          "oklch(38% 0.17797 281.14)",
+          "oklch(49% 0.17797 281.14)",
+          "oklch(61% 0.17797 281.14)",
+          "oklch(72% 0.17797 281.14)",
+          "oklch(84% 0.17797 281.14)",
+          "oklch(95% 0.17797 281.14)"
+        ]
+      }
+    },
+    "tonalRampNote": "Synthesized preview swatches only; not implemented source colors or normative tokens. Source alpha is retained for translucent preview ramps.",
+    "typographyMeta": {
+      "title": {
+        "displayName": "Title"
+      },
+      "headline": {
+        "displayName": "Headline"
+      },
+      "subheading": {
+        "displayName": "Subheading"
+      },
+      "room-title": {
+        "displayName": "Room Title",
+        "purpose": "Bold room names and expandable legacy summary. Intentional 19px extension step.",
+        "source": "public/enhancements/shell.css; public/modding/workbench.css"
+      },
+      "body": {
+        "displayName": "Body"
+      },
+      "detail": {
+        "displayName": "Detail"
+      },
+      "compact-label": {
+        "displayName": "Compact Label"
+      },
+      "loading-detail": {
+        "displayName": "Loading Detail",
+        "purpose": "Live progress in protected consent. Shares the intentional 16px step.",
+        "source": "public/modding/workbench.css"
+      },
+      "native-panel-title": {
+        "displayName": "Native Panel Title"
+      },
+      "native-action": {
+        "displayName": "Native Action"
+      },
+      "native-top-action": {
+        "displayName": "Native Top Action",
+        "purpose": "Native Workbench, Fullscreen, and host-only Lobby. Intentional 16px extension step.",
+        "source": "public/enhancements/help.css"
+      },
+      "native-top-action-phone": {
+        "displayName": "Native Top Action Phone"
+      },
+      "native-xp": {
+        "displayName": "Native Xp",
+        "purpose": "Source-derived identity XP label; no signed-in visual evidence supplied.",
+        "source": "public/enhancements/help.css; public/enhancements/native-ui.js"
+      },
+      "help-title": {
+        "displayName": "Help Title"
+      },
+      "help-heading": {
+        "displayName": "Help Heading",
+        "purpose": "Desktop reading hierarchy; preserve the native face.",
+        "source": "public/enhancements/help.css"
+      },
+      "help-heading-phone": {
+        "displayName": "Help Heading Phone",
+        "purpose": "Readable phone article headings. Intentional 26px extension step.",
+        "source": "public/enhancements/help.css"
+      },
+      "help-subheading": {
+        "displayName": "Help Subheading"
+      },
+      "help-body": {
+        "displayName": "Help Body"
+      },
+      "help-action": {
+        "displayName": "Help Action"
+      },
+      "help-topic-phone": {
+        "displayName": "Help Topic Phone",
+        "purpose": "Horizontally scrolling phone Help topics. Shares the intentional 16px step.",
+        "source": "public/enhancements/help.css"
+      },
+      "code": {
+        "displayName": "Code"
+      },
+      "help-code": {
+        "displayName": "Help Code"
+      },
+      "profile-hash": {
+        "displayName": "Profile Hash",
+        "purpose": "Exact profile identity, kept inside its container through wrapping.",
+        "source": "public/modding/workbench.css"
+      },
+      "consent-body": {
+        "displayName": "Consent Body",
+        "purpose": "Existing 18px dialog reading text, retained after removing the feature introduction.",
+        "source": "public/modding/workbench.css"
+      }
+    },
+    "shadows": [
+      {
+        "name": "native-window-button",
+        "value": "1px 1px 5px -2px rgba(0,0,0,0.63)",
+        "purpose": "Original window/button utilities and added native-material consent."
+      },
+      {
+        "name": "native-field",
+        "value": "1px 1px 4px -2px rgba(0,0,0,0.4)",
+        "purpose": "Original field utility."
+      },
+      {
+        "name": "drawer",
+        "value": "-6px 0 24px #0005",
+        "purpose": "Right overlay edge."
+      }
+    ],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "compact-native-navigation",
+        "value": "1000px"
+      },
+      {
+        "name": "native-navigation-and-help-phone",
+        "value": "700px"
+      },
+      {
+        "name": "drawer-consent-and-lobby-phone",
+        "value": "600px"
+      }
+    ],
+    "interaction": {
+      "nativeTopFocus": {
+        "outline": "2px solid white",
+        "outlineOffset": "-3px"
+      },
+      "shellFocus": {
+        "outline": "3px solid var(--teal)",
+        "outlineOffset": "3px"
+      },
+      "nativeFocus": {
+        "outline": "3px solid #009688",
+        "outlineOffset": "3px"
+      },
+      "helpFocus": {
+        "outline": "3px solid #006b61",
+        "outlineOffset": "2px"
+      },
+      "consentFocus": {
+        "outline": "3px solid #005f56",
+        "outlineOffset": "3px"
+      },
+      "consent": "Native dialog.showModal top layer; Leave Room initial focus; Escape declines; approval retains dialog until ready or departure.",
+      "drawer": "Close initial focus; inert game frame; Tab wrap; Escape dismissal; invoker restoration.",
+      "help": "Back to game initial focus; underlying menu, renderer, and bottom navigation inert; Escape dismissal and prior-focus restoration."
+    },
+    "reconciliation": {
+      "artifact": ".impeccable/review/current-detector.json",
+      "findingCount": 18,
+      "severity": "advisory",
+      "decision": "Intentional, user-approved native-system extension; reconcile documentation without palette or type normalization. Detector was not rerun.",
+      "colorTokens": [
+        "native-xp-track",
+        "help-link",
+        "help-rail-hover",
+        "help-table-line",
+        "muted-copy",
+        "status-error",
+        "pack-line",
+        "pack-progress-track",
+        "consent-backdrop"
+      ],
+      "typeTokens": [
+        "native-top-action",
+        "help-topic-phone",
+        "loading-detail",
+        "room-title",
+        "help-heading-phone"
+      ],
+      "uniqueTypeSteps": [
+        "16px",
+        "19px",
+        "26px"
+      ]
+    },
+    "evidence": {
+      "contracts": [
+        "PRODUCT.md",
+        ".impeccable/bonk-surface.md"
+      ],
+      "finishReview": ".impeccable/review/current-finish-review.md",
+      "captures": [
+        "evidence/verification/current/home-desktop.png",
+        "evidence/verification/current/home-mobile.png",
+        "evidence/verification/current/help-desktop.png",
+        "evidence/verification/current/help-mobile.png",
+        "evidence/verification/current/workbench-desktop.png",
+        "evidence/verification/current/workbench-mobile.png",
+        "evidence/verification/current/mod-consent-desktop.png",
+        "evidence/verification/current/mod-consent-mobile.png"
+      ],
+      "sourceOnly": [
+        "Signed-in identity XP rendering and animation.",
+        "Protected loading/error appearance and keyboard execution.",
+        "Help topics beyond the captured Controls and Custom modes articles."
+      ],
+      "provenance": "evidence/original/asset-manifest.json",
+      "coverage": "docs/COVERAGE.md",
+      "note": "The current capture list is retained from the earlier design record. This reconciliation inspected the eight publishing captures listed below and their source. No browser, new UI QA, detector run, implementation change, or raster generation occurred in this pass.",
+      "publishing": {
+        "finishReview": ".impeccable/review/publishing-finish-review.md",
+        "finishVerdict": ".impeccable/review/publishing-finish-verdict.md",
+        "disposition": "ship",
+        "captures": [
+          "evidence/verification/publishing/help-desktop.png",
+          "evidence/verification/publishing/help-mobile.png",
+          "evidence/verification/publishing/workbench-desktop.png",
+          "evidence/verification/publishing/workbench-mobile.png",
+          "evidence/verification/publishing/mod-consent-desktop.png",
+          "evidence/verification/publishing/mod-consent-mobile.png",
+          "evidence/verification/publishing/help-modes-desktop.png",
+          "evidence/verification/publishing/help-modes-mobile.png"
+        ],
+        "scope": "Publishing copy and native visual coherence. Ship covers the listed Help label fix, not backend behavior or simulation parity."
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Workbench action",
+      "kind": "button",
+      "refersTo": "button-workbench",
+      "description": "Standard added action; hover darkens brown.",
+      "html": "<button class=\"ds-action\">Refresh rooms</button>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-action{font:17px/1.3 Future,sans-serif;background:var(--brown,#795548);color:#fff;border:0;border-radius:3px;cursor:pointer;padding:8px 15px}.ds-action:hover{background:#624235}.ds-action:focus-visible{outline:3px solid var(--teal,#007f73);outline-offset:3px}.ds-action:disabled{opacity:.55;cursor:wait}"
+    },
+    {
+      "name": "Drawer Close",
+      "kind": "button",
+      "refersTo": "button-close",
+      "description": "Compact dark teal action in the Workbench header.",
+      "html": "<button class=\"ds-close\">Close</button>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-close{font:14px/1.3 Future,sans-serif;background:#006b61;color:#fff;border:0;border-radius:3px;padding:8px 15px;cursor:pointer}.ds-close:hover{background:#624235}.ds-close:focus-visible{outline:3px solid var(--teal,#007f73);outline-offset:3px}"
+    },
+    {
+      "name": "Native classic action",
+      "kind": "button",
+      "refersTo": "button-native",
+      "description": "Retained native lobby action primitive; home Help retains the classic menu geometry described in DESIGN.md.",
+      "html": "<button class=\"ds-native-action\">Join</button>",
+      "css": "@font-face{font-family:futurept_b1;src:url('/game/fonts/futurept_7a255.otf')}@font-face{font-family:futurept_book_fixed;src:url('/game/fonts/fptbook_fixed_5.otf')}@font-face{font-family:futurept_medium;src:url('/game/fonts/fptmed.otf')}.ds-native-action{font:16px/24px futurept_b1,sans-serif;letter-spacing:.4px;background:#795548;color:#fff;border:0;border-radius:2px;padding:0;width:100px;height:24px;text-align:center;cursor:pointer}.ds-native-action:hover{background:#7f5d51!important}.ds-native-action:active{background:#4b252b}.ds-native-action:focus-visible{outline:3px solid #009688;outline-offset:3px}"
+    },
+    {
+      "name": "Workbench field",
+      "kind": "input",
+      "refersTo": "field-workbench",
+      "description": "Label above a full-width white field.",
+      "html": "<label class=\"ds-field-label\">Room name<input class=\"ds-field\" value=\"New room\" maxlength=\"60\"></label>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-field-label{display:block;font:17px Future,sans-serif;color:var(--ink,#242424);margin:12px 0 6px}.ds-field{display:block;width:100%;padding:9px;margin-top:5px;font:inherit;color:var(--ink,#242424);background:#fff;border:1px solid #9d9d9d;border-radius:3px;caret-color:var(--teal,#007f73)}.ds-field:focus-visible{outline:3px solid var(--teal,#007f73);outline-offset:3px}"
+    },
+    {
+      "name": "Workbench tabs",
+      "kind": "nav",
+      "refersTo": "tab-workbench",
+      "description": "Equal tabs on a gray strip; preview selection is static.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\" aria-label=\"Workbench\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Rooms</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\">Mods</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Library</button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\">Account</button></div>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-tabs{display:flex;gap:2px;padding-top:8px;border-bottom:2px solid var(--teal,#007f73);background:var(--paper,#e2e2e2)}.ds-tab{flex:1;font:17px/1.3 Future,sans-serif;border:0;border-radius:3px 3px 0 0;padding:9px 4px;background:transparent;color:var(--ink,#242424);cursor:pointer}.ds-tab:hover{background:transparent}.ds-tab[aria-selected=\"true\"]{background:var(--teal,#007f73);color:#fff}.ds-tab:focus-visible{outline:3px solid var(--teal,#007f73);outline-offset:3px}"
+    },
+    {
+      "name": "Native top navigation actions",
+      "kind": "nav",
+      "refersTo": "button-native-top",
+      "description": "Real Workbench and Fullscreen actions inherit the native bar, hover, pressed state, and inset white focus.",
+      "html": "<nav class=\"ds-top-nav\" aria-label=\"Game controls\"><button class=\"ds-top-action\" aria-expanded=\"false\">Workbench</button><button class=\"ds-top-action\" aria-pressed=\"false\">Fullscreen</button></nav>",
+      "css": "@font-face{font-family:futurept_b1;src:url('/game/fonts/futurept_7a255.otf')}@font-face{font-family:futurept_book_fixed;src:url('/game/fonts/fptbook_fixed_5.otf')}@font-face{font-family:futurept_medium;src:url('/game/fonts/fptmed.otf')}.ds-top-nav{display:flex;align-items:center;height:35px;background:#273749c7}.ds-top-action{height:34px;min-width:86px;padding:0 12px;background:transparent;color:#fff;border:0;border-left:1px solid #000000aa;border-radius:0;font:16px/34px futurept_b1,sans-serif;cursor:pointer;white-space:nowrap;box-shadow:inset 1px 0 #ffffff12}.ds-top-action:hover{background:#2d435a}.ds-top-action:active,.ds-top-action:hover:active{background:#1e2c3c}.ds-top-action:focus-visible{outline:2px solid #fff;outline-offset:-3px}@media(max-width:700px){.ds-top-action{font-size:14px;min-width:80px;padding:0 9px}}"
+    },
+    {
+      "name": "Help topics",
+      "kind": "nav",
+      "refersTo": "topic-help",
+      "description": "Native gray reading rail with brown current topic; phone rail scrolls horizontally.",
+      "html": "<nav class=\"ds-help-topics\" aria-label=\"Help topics\"><button class=\"ds-help-topic\" aria-current=\"page\">Controls</button><button class=\"ds-help-topic\">Modding</button><button class=\"ds-help-topic\">Create a modpack</button></nav>",
+      "css": "@font-face{font-family:futurept_b1;src:url('/game/fonts/futurept_7a255.otf')}@font-face{font-family:futurept_book_fixed;src:url('/game/fonts/fptbook_fixed_5.otf')}@font-face{font-family:futurept_medium;src:url('/game/fonts/fptmed.otf')}.ds-help-topics{width:235px;background:#bfcbd0;padding:18px 0;overflow:auto}.ds-help-topic{display:block;width:100%;padding:9px 24px;border:0;border-radius:0;background:transparent;color:#242424;text-align:left;font:17px/1.4 futurept_book_fixed,sans-serif;cursor:pointer}.ds-help-topic:hover{background:#b1c0c6}.ds-help-topic[aria-current=\"page\"]{background:#795548;color:#fff}.ds-help-topic:focus-visible{outline:3px solid #006b61;outline-offset:2px}@media(max-width:700px){.ds-help-topics{display:flex;width:100%;overflow-x:auto;padding:0}.ds-help-topic{width:auto;flex-shrink:0;white-space:nowrap;padding:10px 14px;font-size:16px}}"
+    },
+    {
+      "name": "Native identity XP",
+      "kind": "custom",
+      "refersTo": "button-native-top",
+      "description": "Source-derived compact XP placement. Preview fill is illustrative; signed-in appearance has no supplied capture.",
+      "html": "<div class=\"ds-identity\"><span class=\"ds-identity-name\">Player</span><span class=\"ds-identity-level\">Level</span><div class=\"ds-xp\"><span class=\"ds-xp-fill\"></span><span class=\"ds-xp-label\" role=\"status\">XP</span></div></div>",
+      "css": "@font-face{font-family:futurept_b1;src:url('/game/fonts/futurept_7a255.otf')}@font-face{font-family:futurept_book_fixed;src:url('/game/fonts/fptbook_fixed_5.otf')}@font-face{font-family:futurept_medium;src:url('/game/fonts/fptmed.otf')}.ds-identity{position:relative;display:flex;align-items:flex-start;min-width:138px;height:35px;background:#273749c7;color:#fff;font:14px/21px futurept_b1,sans-serif}.ds-identity-name{min-width:0;padding-left:7px;padding-right:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-identity-level{padding:0 5px;white-space:nowrap}.ds-xp{position:absolute;inset:auto 10px 3px 48px;height:12px;pointer-events:none}.ds-xp::before{content:\"\";position:absolute;inset:4px auto auto 0;width:calc(100% - 54px);height:5px;border:1px solid #131c27;border-radius:2px;background:#131c27}.ds-xp-fill{display:block;position:absolute;inset:5px auto auto 1px;width:25%;height:3px;background:#473aaf}.ds-xp-label{position:absolute;inset:-1px 0 auto auto;width:50px;color:#fff;font:11px/12px futurept_medium,sans-serif;white-space:nowrap}"
+    },
+    {
+      "name": "Code-pack group",
+      "kind": "card",
+      "refersTo": "field-workbench",
+      "description": "Available packs retain a fieldset and compact checkbox rows rather than individual cards.",
+      "html": "<fieldset class=\"ds-pack-group\"><legend class=\"ds-pack-legend\">Available packs</legend><label class=\"ds-pack-choice\"><input class=\"ds-pack-check\" type=\"checkbox\"><span><strong class=\"ds-pack-name\">Orb Kit 1.0.0</strong></span></label></fieldset>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-pack-group{min-width:0;border:1px solid #a4b2b9;padding:10px 12px;margin:16px 0 10px;background:var(--paper,#e2e2e2);color:var(--ink,#242424);font:17px/1.4 Future,sans-serif}.ds-pack-legend{font-weight:700;padding:0 5px}.ds-pack-choice{display:flex;align-items:flex-start;gap:10px;margin:10px 0}.ds-pack-check{width:auto;margin:5px 0 0;flex-shrink:0;accent-color:#007f73}.ds-pack-check:focus-visible{outline:3px solid var(--teal,#007f73);outline-offset:3px}.ds-pack-name,.ds-pack-detail{display:block}.ds-pack-detail{margin-top:3px;font-size:15px;line-height:1.4}"
+    },
+    {
+      "name": "Room code consent",
+      "kind": "custom",
+      "refersTo": "consent-panel",
+      "description": "Inline preview of the native top-layer dialog; production uses showModal, exact hashes, and protected loading.",
+      "html": "<section class=\"ds-consent\" role=\"dialog\" aria-labelledby=\"ds-consent-title\"><header class=\"ds-consent-header\"><h2 class=\"ds-consent-title\" id=\"ds-consent-title\">Join a modded room?</h2></header><div class=\"ds-consent-body\"><p class=\"ds-consent-copy\">1 code pack · 1 asset</p><p class=\"ds-consent-copy\">Mods can access your game and account data. Only download packs you trust.</p><article class=\"ds-consent-pack\"><strong>Orb Kit 1.0.0</strong><p class=\"ds-consent-detail\">orb-kit · 1 asset</p></article><p class=\"ds-consent-hash\">Profile SHA-256 <code class=\"ds-consent-code\">54c74d33cb514a365c66e3749cb32d920cb6863089bd852d45fd1a1f4918fd17</code></p><div class=\"ds-consent-actions\"><button class=\"ds-consent-action\">Leave Room</button><button class=\"ds-consent-action\">Download &amp; Join</button></div></div></section>",
+      "css": "@font-face{font-family:Future;src:url('/game/fonts/fptbook.otf')}@font-face{font-family:Future;src:url('/game/fonts/fptb.otf');font-weight:700}.ds-consent{width:min(560px,calc(100% - 28px));max-height:calc(100dvh - 28px);padding:0;border:0;border-radius:7px;background:#cfd8dc;color:#242424;box-shadow:1px 1px 5px -2px rgba(0,0,0,.63);overflow:auto;font:18px/1.4 Future,sans-serif}.ds-consent-header{padding:14px 22px;background:#007f73;color:#fff}.ds-consent-title{margin:0;font-size:24px}.ds-consent-body{padding:18px 22px 22px}.ds-consent-copy{margin:0 0 14px}.ds-consent-pack{padding:0 0 10px;border-bottom:1px solid #a4b2b9;margin-bottom:16px}.ds-consent-detail{font-size:15px;line-height:1.4;margin:3px 0 14px}.ds-consent-hash{font-size:13px;line-height:1.5;overflow-wrap:anywhere;color:#454545;margin:0 0 14px}.ds-consent-code{font:12px/1.5 ui-monospace,monospace}.ds-consent-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:20px}.ds-consent-action{min-height:40px;padding:8px 15px;border:0;border-radius:3px;background:var(--brown,#795548);color:#fff;font:17px/1.3 Future,sans-serif;cursor:pointer}.ds-consent-action:hover{background:#624235}.ds-consent-action:focus-visible{outline:3px solid #005f56;outline-offset:3px}@media(max-width:600px){.ds-consent-header{padding:12px 16px}.ds-consent-body{padding:16px}.ds-consent-actions{justify-content:stretch}.ds-consent-action{flex:1}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The original Bonk game, with an optional workbench",
+    "overview": "The shipped Bonk client is the visual authority. Its Futura PT lettering, teal title bars, warm brown actions, gray windows, native icons, skins, editors, and rendered game geometry establish the world. This record refreshes the existing system for the user-approved native navigation, Help, XP placement, code-modpack Workbench, and consent extension.\n\nWorkbench and Fullscreen belong to the original dark top navigation. The workbench uses the same font assets and familiar flat controls in a compact utility layer; deeper teal marks its header, selected tabs, and focus. Help uses the original classic teal and gray materials for sustained reading. The game retains the whole viewport beneath optional tools, and opening a drawer does not resize the renderer.",
+    "keyCharacteristics": [
+      "Original game assets and native interface materials remain authoritative.",
+      "Native navigation owns Workbench and Fullscreen; the home menu owns Help.",
+      "Compact Futura PT controls sit on gray panels with teal structural bars.",
+      "Brown buttons carry actions; selected Workbench tabs use deeper teal.",
+      "Explicit content consent precedes room code execution."
+    ],
+    "rules": [
+      {
+        "name": "The Native Materials Rule",
+        "body": "Extend the original teal, brown, gray, and Futura relationship; preserve native assets and game colors rather than applying a blanket renderer recolor.",
+        "section": "colors"
+      },
+      {
+        "name": "The Same Lettering Rule",
+        "body": "Use the shipped Futura assets for interface additions. Reserve monospace for source examples, script editing, and exact content hashes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Whole Viewport Rule",
+        "body": "Added tools overlay the full game frame; opening or closing them must not change renderer dimensions.",
+        "section": "layout"
+      },
+      {
+        "name": "The Native Ownership Rule",
+        "body": "Keep Workbench and Fullscreen in the original top navigation, Help between Skins and Friend List, and XP within the navigation identity.",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "**Do** preserve original assets, Futura lettering, native teal bars, brown actions, gray panels, and editor geometry.",
+      "**Do** use deeper Workbench teal for its header, selected tabs, progress, and shell focus.",
+      "**Do** retain the native top-bar hover, pressed, visibility, and responsive behavior for added navigation actions.",
+      "**Do** keep Help readable through its desktop topic column and phone topic rail, with article scrolling and a visible return action.",
+      "**Do** preserve drawer focus entry, containment, inert background, Escape dismissal, and focus restoration.",
+      "**Do** keep exact-profile identity, executable-code disclosure, Leave Room, and Download & Join together in the protected consent dialog.",
+      "**Do** keep the original XP nodes and animation ownership while fitting progress beneath the name and level.",
+      "**Do** let the phone lobby scroll vertically while retaining its native panels and controls."
+    ],
+    "donts": [
+      "**Don't** replace the original interface with a landing page or generic dashboard identity.",
+      "**Don't** restore the removed floating toolbar or reveal control.",
+      "**Don't** replace native art, icons, or skins with invented approximations.",
+      "**Don't** turn optional imported mod styling into base-system tokens.",
+      "**Don't** hide consent decisions behind overflowing hashes or dismiss the protected loading state before readiness.",
+      "**Don't** promote source-only XP/loading states or partial parity coverage into verified design or product claims."
+    ]
+  }
+}

@@ -81,7 +81,7 @@ export function makeNativeServiceHandler(options: { store?: ServiceStore; now?: 
       // Native host telemetry counts map usage, not wins or XP. Host outcome receipts
       // are separately supplied by the exact simulation transition hook below.
       if (sid === room.hostId && room.gameStartTime > 0) {
-        const id = store.entityId('map', data?.mid), source = id ? undefined : findNativeCatalogMap(data?.mid);
+        const id = store.entityId('map', data?.mid), source = id ? undefined : findNativeCatalogMap(data?.mid,store);
         const key = `${data?.mid}:${data?.mo}:${state.receipt?.round ?? 0}`;
         if ((id || source) && !state.played.has(key)) { store.recordMapRound(id ? 2 : sourceVersion(source!), data.mid, data.mo); state.played.add(key); }
       }
@@ -101,7 +101,7 @@ export function makeNativeServiceHandler(options: { store?: ServiceStore; now?: 
     if (event === '39' || event === '41') {
       const id = store.entityId('map', data?.mapid);
       try {
-        const source = id ? undefined : findNativeCatalogMap(data?.mapid);
+        const source = id ? undefined : findNativeCatalogMap(data?.mapid,store);
         if (!id && !source) return;
         const rating = data?.vote === 1 ? 1 : data?.vote === 0 ? -1 : NaN;
         const map = id ? (event === '39' ? store.rateMap(id, account.id, rating) : store.getMap(id, account.id)) :
@@ -124,7 +124,7 @@ export function makeNativeServiceHandler(options: { store?: ServiceStore; now?: 
     if (data.winner >= 0 && activeIds.length > 1 && !winners.size) return { error: 'Winner is not an active participant.' };
     state.receipt = { round: data.round, winner: data.winner, winners, key: `${state.nonce}:${state.game}:${data.round}`, at: now() };
     const localMap = store.entityId('map', data.mapid), sourceMap = localMap ? undefined :
-      getCatalogMap(data.dbv, data.mapid) ?? findNativeCatalogMap(data.mapid);
+      getCatalogMap(data.dbv, data.mapid,true,store) ?? findNativeCatalogMap(data.mapid,store);
     const playKey = `${data.mapid}:${data.mode}:${data.round}`;
     if ((localMap || sourceMap) && !state.played.has(playKey)) {
       store.recordMapRound(localMap ? 2 : sourceVersion(sourceMap!), data.mapid, data.mode);
