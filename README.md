@@ -2,14 +2,6 @@
 
 Tonk.io is based on Bonk.io, with its own multiplayer server, separate accounts, and JavaScript/TypeScript mod support.
 
-## What's different
-
-### Separate server and accounts
-
-Tonk.io has its own accounts and community data. Your Bonk.io account doesn't carry over, and you don't need your Bonk.io login.
-
-The hosted version uses Cloudflare Workers and Supabase. You can also run your own copy with Node or Docker.
-
 ### Modpacks
 
 Mods can add game objects, textures, sounds, modes, and UI. They can also change engine functions, hook into physics and rendering, and create objects with actual Box2D bodies.
@@ -20,17 +12,7 @@ Room hosts can upload a `.tonkmod` ZIP with a `tonk.mod.json` file, client code,
 
 Every code and asset file is checked against its SHA-256 hash before loading. Once you approve a pack, that approval is remembered unless its contents change. Leaving cancels the download, and the match waits until everyone has finished loading.
 
-Room packs on Cloudflare Workers have an 8 MiB limit for both the compressed and expanded files, with up to 2,048 files. The Node server defaults to 64 MiB.
-
 Mods can access the game page and its local data, so only load packs you trust.
-
-### Screen layout
-
-The game fills the window, and the bottom kill boundary lines up with the bottom of the screen. This is a display change; the physics stay the same.
-
-### Owner controls
-
-H644b has controls for managing Tonk.io rooms, accounts, maps, replays, and server settings. More details are in the [admin guide](docs/SERVICE-PARITY.md).
 
 ## Run it locally
 
@@ -71,5 +53,3 @@ npm run mods -- pack /absolute/path/to/my-mod /absolute/path/to/my-mod.tonkmod
 Mods with Node server code need to be installed directly by the server operator. Restart the server after installing them. Room hosts can't upload Node server code through the browser.
 
 If you change a pack's contents, give it a new version number.
-
-To put your server online, follow the [hosting guide](docs/DEPLOYMENT.md).
